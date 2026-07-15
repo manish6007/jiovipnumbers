@@ -8,7 +8,7 @@ export const contentType = "image/png";
 // own rounded mask). Uses the shared markSvg so it can never drift from the tab
 // favicon.
 export default function AppleIcon() {
-  const mark = `data:image/svg+xml;utf8,${encodeURIComponent(markSvg("chip", 140))}`;
+  const mark = `data:image/svg+xml;utf8,${encodeURIComponent(markSvg("crest", 140))}`;
   return new ImageResponse(
     (
       <div

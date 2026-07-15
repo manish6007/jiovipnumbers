@@ -1,13 +1,29 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" role="img" aria-label="JioVIPNumber">
   <defs>
-    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#2563eb"/>
-      <stop offset="1" stop-color="#0ea5e9"/>
+    <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff2c4"/>
+      <stop offset="0.35" stop-color="#fcd34d"/>
+      <stop offset="0.7" stop-color="#f59e0b"/>
+      <stop offset="1" stop-color="#b45309"/>
+    </linearGradient>
+    <linearGradient id="navy" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#12306e"/>
+      <stop offset="1" stop-color="#0a1a3c"/>
+    </linearGradient>
+    <linearGradient id="gem" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#bae6fd"/>
+      <stop offset="1" stop-color="#0284c7"/>
     </linearGradient>
   </defs>
-  <rect x="1.5" y="1.5" width="45" height="45" rx="13" fill="url(#g)"/>
-  <rect x="12.5" y="16" width="19" height="18" rx="4.2" fill="none" stroke="#fff" stroke-width="2.4"/>
-  <path d="M22 17.6 V32.4 M14.2 25 H29.8" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>
-  <circle cx="22" cy="25" r="2.5" fill="url(#g)" stroke="#fff" stroke-width="1.8"/>
-  <path d="M35 8.4 C35.5 11.6 36.4 12.5 39.6 13 C36.4 13.5 35.5 14.4 35 17.6 C34.5 14.4 33.6 13.5 30.4 13 C33.6 12.5 34.5 11.6 35 8.4 Z" fill="#fff"/>
+  <rect x="1.5" y="1.5" width="45" height="45" rx="13" fill="url(#navy)"/>
+  <rect x="2.6" y="2.6" width="42.8" height="42.8" rx="11.6" fill="none" stroke="url(#gold)" stroke-width="2.2"/>
+  <path d="M16.5 17.5 L16.5 11.455 L21.3 13.966 L24 8.2 L26.7 13.966 L31.5 11.455 L31.5 17.5 Z"
+        fill="url(#gold)" stroke="#7c4a0a" stroke-width="0.5" stroke-linejoin="round"/>
+  <circle cx="16.5" cy="11.455" r="1.35" fill="#fff7d6"/>
+  <circle cx="24" cy="8.2" r="1.5" fill="#fff7d6"/>
+  <circle cx="31.5" cy="11.455" r="1.35" fill="#fff7d6"/>
+  <path d="M13.5 19 L24 36.5 L34.5 19 L29.6 19 L24 29 L18.4 19 Z"
+        fill="url(#gold)" stroke="#7c4a0a" stroke-width="0.5" stroke-linejoin="round"/>
+  <path d="M21.4 21.85 L22.7 20.55 L25.3 20.55 L26.6 21.85 L24 25.23 Z"
+        fill="url(#gem)" stroke="#e0f2fe" stroke-width="0.5" stroke-linejoin="round"/>
 </svg>

@@ -52,6 +52,11 @@ const config: Config = {
           DEFAULT: "hsl(var(--warning))",
           foreground: "hsl(var(--warning-foreground))",
         },
+        gold: {
+          DEFAULT: "hsl(var(--gold))",
+          deep: "hsl(var(--gold-deep))",
+          foreground: "hsl(var(--gold-foreground))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -62,6 +67,8 @@ const config: Config = {
         glass: "0 8px 32px 0 rgba(31, 58, 147, 0.12)",
         "glass-lg": "0 16px 48px 0 rgba(31, 58, 147, 0.18)",
         glow: "0 0 24px 0 rgba(37, 99, 235, 0.35)",
+        gold: "0 6px 22px 0 rgba(180, 120, 10, 0.35)",
+        "gold-lg": "0 10px 32px 0 rgba(180, 120, 10, 0.42)",
       },
       backgroundImage: {
         "hero-gradient":

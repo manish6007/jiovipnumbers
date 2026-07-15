@@ -35,6 +35,11 @@
     --input: 214 32% 91%;
     --ring: 221 83% 53%;
 
+    /* Gold accent (secondary) */
+    --gold: 38 92% 50%;          /* #f59e0b-ish */
+    --gold-deep: 26 90% 37%;     /* #b45309 — contrast-safe gold text on light */
+    --gold-foreground: 30 40% 18%;
+
     --radius: 1rem;
   }
 
@@ -66,6 +71,17 @@
 
   .gradient-text {
     @apply bg-gradient-to-r from-blue-600 via-blue-500 to-sky-500 bg-clip-text text-transparent;
+  }
+
+  /* Gold accents (secondary). Text uses a deep gold for contrast on light grounds. */
+  .gold-text {
+    @apply bg-gradient-to-b from-amber-500 to-amber-700 bg-clip-text font-extrabold text-transparent;
+  }
+  .gold-gradient {
+    background-image: linear-gradient(180deg, #fcd34d 0%, #f59e0b 55%, #b45309 100%);
+  }
+  .gold-ring {
+    @apply ring-2 ring-amber-400/70;
   }
 
   .btn-glow {

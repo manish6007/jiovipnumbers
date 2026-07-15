@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
  * `markSvg` source. Server-safe (no hooks) — renders the shared SVG inline.
  */
 export function LogoMark({
-  variant = "chip",
+  variant = "crest",
   size = 36,
   className,
 }: {
@@ -18,7 +18,7 @@ export function LogoMark({
   return (
     <span
       aria-hidden
-      className={cn("inline-flex shrink-0 rounded-xl shadow-glow", className)}
+      className={cn("inline-flex shrink-0 rounded-xl shadow-gold", className)}
       style={{ width: size, height: size, lineHeight: 0 }}
       dangerouslySetInnerHTML={{ __html: markSvg(variant, size) }}
     />

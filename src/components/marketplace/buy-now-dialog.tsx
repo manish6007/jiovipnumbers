@@ -132,7 +132,7 @@ export function BuyNowDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="gradient" size="lg" className="flex-1" disabled={disabled}>
+        <Button variant="gold" size="lg" className="flex-1" disabled={disabled}>
           <ShoppingBag className="h-5 w-5" /> Buy Now
         </Button>
       </DialogTrigger>

@@ -5,14 +5,19 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { WhatsAppButton } from "./whatsapp-button";
 import { RatingStars } from "./rating-stars";
-import { formatINR, formatMobile } from "@/lib/utils";
+import { cn, formatINR, formatMobile } from "@/lib/utils";
 
 export function NumberCard({ number }: { number: VipNumberWithRelations }) {
   const partner = number.partner;
   const soldOut = number.status === "sold" || number.status === "reserved";
 
   return (
-    <div className="group glass relative flex flex-col overflow-hidden rounded-2xl p-5 transition-all hover:-translate-y-1 hover:shadow-glass-lg">
+    <div
+      className={cn(
+        "group glass relative flex flex-col overflow-hidden rounded-2xl p-5 transition-all hover:-translate-y-1 hover:shadow-glass-lg",
+        number.is_featured && "ring-2 ring-amber-400/60",
+      )}
+    >
       {/* badges */}
       <div className="mb-3 flex items-center justify-between">
         <div className="flex flex-wrap gap-1.5">

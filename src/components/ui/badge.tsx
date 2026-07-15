@@ -14,7 +14,8 @@ const badgeVariants = cva(
         warning: "border-transparent bg-warning/15 text-warning",
         destructive: "border-transparent bg-destructive/15 text-destructive",
         premium:
-          "border-transparent bg-gradient-to-r from-amber-400 to-yellow-500 text-white shadow-sm",
+          "border-amber-300/60 bg-gradient-to-b from-amber-300 via-amber-400 to-amber-600 text-amber-950 shadow-sm",
+        gold: "border-transparent bg-amber-500/15 text-amber-700",
         info: "border-transparent bg-blue-500/15 text-blue-600",
       },
     },

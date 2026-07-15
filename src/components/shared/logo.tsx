@@ -5,22 +5,30 @@ import { cn } from "@/lib/utils";
 
 export function Logo({
   className,
-  variant = "chip",
+  variant = "crest",
   size = 36,
   showWordmark = true,
+  showDotCom = false,
 }: {
   className?: string;
   variant?: MarkVariant;
   size?: number;
   showWordmark?: boolean;
+  showDotCom?: boolean;
 }) {
   return (
     <Link href="/" className={cn("flex items-center gap-2", className)}>
       <LogoMark variant={variant} size={size} />
       {showWordmark && (
         <span className="text-lg font-extrabold tracking-tight">
-          <span className="gradient-text">JioVIP</span>
+          <span className="text-blue-600">Jio</span>
+          <span className="gold-text">VIP</span>
           <span className="text-foreground">Number</span>
+          {showDotCom && (
+            <span className="ml-0.5 text-xs font-semibold text-muted-foreground">
+              .com
+            </span>
+          )}
         </span>
       )}
     </Link>
