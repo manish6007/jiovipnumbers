@@ -1,17 +1,28 @@
 import Link from "next/link";
-import { Crown } from "lucide-react";
+import { LogoMark } from "./logo-mark";
+import type { MarkVariant } from "@/lib/brand";
 import { cn } from "@/lib/utils";
 
-export function Logo({ className }: { className?: string }) {
+export function Logo({
+  className,
+  variant = "chip",
+  size = 36,
+  showWordmark = true,
+}: {
+  className?: string;
+  variant?: MarkVariant;
+  size?: number;
+  showWordmark?: boolean;
+}) {
   return (
     <Link href="/" className={cn("flex items-center gap-2", className)}>
-      <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-sky-500 text-white shadow-glow">
-        <Crown className="h-5 w-5" />
-      </span>
-      <span className="text-lg font-extrabold tracking-tight">
-        <span className="gradient-text">JioVIP</span>
-        <span className="text-foreground">Number</span>
-      </span>
+      <LogoMark variant={variant} size={size} />
+      {showWordmark && (
+        <span className="text-lg font-extrabold tracking-tight">
+          <span className="gradient-text">JioVIP</span>
+          <span className="text-foreground">Number</span>
+        </span>
+      )}
     </Link>
   );
 }
