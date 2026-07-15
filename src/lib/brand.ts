@@ -133,25 +133,23 @@ export function emblemSvg(width = 360, id = "jv-emblem"): string {
   <rect x="9" y="23" width="342" height="94" rx="47" fill="none" stroke="${gold}" stroke-width="3"/>
 
   <!-- SIM chip -->
-  <g transform="translate(40 44)">
+  <g transform="translate(71 44)">
     <rect x="0" y="0" width="54" height="52" rx="10" fill="none" stroke="${gold}" stroke-width="3.2"/>
     <rect x="10" y="12" width="34" height="28" rx="4" fill="none" stroke="${gold}" stroke-width="2.4"/>
     <path d="M27 12 V40 M10 26 H44" stroke="${gold}" stroke-width="2.4"/>
     <path d="M10 19 H18 M36 19 H44 M10 33 H18 M36 33 H44" stroke="${gold}" stroke-width="2"/>
   </g>
 
-  <!-- Crown over the V -->
-  ${crown(150, 40, 40, gold)}
-
-  <!-- VIP -->
-  <g fill="${gold}" stroke="#7c4a0a" stroke-width="1" stroke-linejoin="round">
-    <path d="M120 48 L150 104 L152 104 L134 48 Z"/>
-    <path d="M150 104 L180 48 L166 48 L150 92 Z"/>
-    <rect x="188" y="48" width="13" height="56" rx="2"/>
-    <path d="M214 48 L214 104 L227 104 L227 86 L240 86 C252 86 260 78 260 67 C260 56 252 48 240 48 Z M227 60 L239 60 C243 60 246 63 246 67 C246 71 243 74 239 74 L227 74 Z"/>
+  <!-- Crown + VIP with the diamond nestled inside the V -->
+  <g transform="translate(29 0)">
+    ${crown(150, 40, 40, gold)}
+    <g fill="${gold}" stroke="#7c4a0a" stroke-width="1" stroke-linejoin="round">
+      <path d="M120 48 L150 104 L152 104 L134 48 Z"/>
+      <path d="M150 104 L180 48 L166 48 L150 92 Z"/>
+      <rect x="188" y="48" width="13" height="56" rx="2"/>
+      <path d="M214 48 L214 104 L227 104 L227 86 L240 86 C252 86 260 78 260 67 C260 56 252 48 240 48 Z M227 60 L239 60 C243 60 246 63 246 67 C246 71 243 74 239 74 L227 74 Z"/>
+    </g>
+    ${diamond(150, 70, 12, `url(#${id}-gem)`)}
   </g>
-
-  <!-- Diamond -->
-  ${diamond(300, 62, 20, `url(#${id}-gem)`)}
 </svg>`;
 }
