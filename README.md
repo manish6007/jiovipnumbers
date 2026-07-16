@@ -113,8 +113,11 @@ docs/               SETUP.md · DATABASE.md · API.md
 
 ## 🔒 Notes on scope
 
-- **OTP** uses Supabase Phone Auth — configure an SMS provider (MSG91 / Twilio)
-  in the Supabase dashboard. See docs/SETUP.md.
+- **OTP** uses Supabase Phone Auth. Develop for free with Supabase **Test OTP**
+  numbers. For production, Supabase's *native* SMS providers are Twilio / Twilio
+  Verify / MessageBird / Vonage / Textlocal; the **cheapest for India is MSG91**,
+  wired via Supabase's "Send SMS" hook using the Edge Function in
+  `supabase/functions/send-sms-msg91/`. Full walkthrough in **docs/SETUP.md §5**.
 - **Payments** support both Razorpay (online) and manual methods (UPI / bank /
   cash) with admin verification.
 - The repo ships **no dummy listings** (per spec). Reference categories and a
