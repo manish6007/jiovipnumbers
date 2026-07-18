@@ -2,11 +2,15 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { getCurrentPartner } from "@/lib/auth";
 import { numberListingSchema, type NumberListingInput } from "@/lib/validators";
 import { numberSlug } from "@/lib/utils";
 import { audit, notify, getAdminIds } from "@/lib/notifications";
+import { AUCTION_DURATION_HOURS, type AuctionDurationKey } from "@/lib/bidding";
 import type { NumberStatus } from "@/types/database";
+
+const SETTINGS_ID = "00000000-0000-0000-0000-000000000001";
 
 /**
  * Ensure the caller has a partner account; returns partner or an error.
@@ -22,7 +26,11 @@ async function requirePartner() {
 }
 
 export async function createNumber(
-  input: NumberListingInput & { imageUrls?: string[] },
+  input: NumberListingInput & {
+    imageUrls?: string[];
+    isAuction?: boolean;
+    auctionDuration?: AuctionDurationKey;
+  },
 ): Promise<{ ok?: boolean; error?: string; id?: string }> {
   const parsed = numberListingSchema.safeParse(input);
   if (!parsed.success) return { error: parsed.error.errors[0]?.message };
@@ -42,6 +50,23 @@ export async function createNumber(
     .maybeSingle();
   if (dupe) return { error: "This number is already listed on the platform." };
 
+  // Auction is opt-in and gated by the global toggle — re-checked server-side,
+  // never trusted from the client. The clock doesn't start yet: the listing
+  // isn't publicly visible until admin approval, so `reviewListing` is what
+  // actually activates auction_status/auction_ends_at.
+  let auctionDurationHours: number | null = null;
+  if (input.isAuction && input.auctionDuration) {
+    const admin = createAdminClient();
+    const { data: settings } = await admin
+      .from("platform_settings")
+      .select("bidding_enabled")
+      .eq("id", SETTINGS_ID)
+      .maybeSingle();
+    if (settings?.bidding_enabled) {
+      auctionDurationHours = AUCTION_DURATION_HOURS[input.auctionDuration];
+    }
+  }
+
   const { data: created, error } = await supabase
     .from("numbers")
     .insert({
@@ -56,6 +81,8 @@ export async function createNumber(
       description: parsed.data.description || null,
       status: "available",
       listing_status: "pending",
+      starting_bid: auctionDurationHours ? parsed.data.sellingPrice : null,
+      auction_duration_hours: auctionDurationHours,
     })
     .select("id")
     .single();

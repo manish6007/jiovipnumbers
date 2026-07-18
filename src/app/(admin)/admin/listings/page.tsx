@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { getPlatformSettings } from "@/app/actions/bids";
 import { StatusBadge } from "@/components/dashboard/status-badge";
 import { ReviewActions } from "@/components/dashboard/review-actions";
 import { AdminListingDelete } from "@/components/dashboard/admin-listing-delete";
+import { AuctionControls } from "@/components/dashboard/auction-controls";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn, formatINR, formatMobile, timeAgo } from "@/lib/utils";
@@ -25,7 +27,7 @@ export default async function AdminListingsPage({
     .select("*, partner:partners(business_name, verification_status)")
     .order("created_at", { ascending: false });
   if (status !== "all") query = query.eq("listing_status", status);
-  const { data } = await query;
+  const [{ data }, settings] = await Promise.all([query, getPlatformSettings()]);
 
   const numbers = (data ?? []) as unknown as (VipNumber & {
     partner: Pick<Partner, "business_name" | "verification_status"> | null;
@@ -73,7 +75,9 @@ export default async function AdminListingsPage({
                     <StatusBadge status={n.status} />
                   </div>
                   <p className="text-sm font-semibold gradient-text">
-                    {formatINR(n.selling_price)}
+                    {n.auction_status === "active"
+                      ? `Current bid ${formatINR(n.current_bid ?? n.starting_bid ?? 0)} · ${n.bid_count} bids`
+                      : formatINR(n.selling_price)}
                   </p>
                   <p className="text-xs text-muted-foreground">
                     {n.partner?.business_name || "—"} · {n.operator} ·{" "}
@@ -83,6 +87,13 @@ export default async function AdminListingsPage({
                 <div className="flex flex-wrap items-center gap-2">
                   {n.listing_status === "pending" && (
                     <ReviewActions entity="listing" id={n.id} />
+                  )}
+                  {settings.bidding_enabled && n.listing_status === "approved" && (
+                    <AuctionControls
+                      numberId={n.id}
+                      isAuctionActive={n.auction_status === "active"}
+                      fallbackPrice={n.selling_price}
+                    />
                   )}
                   <Button asChild size="sm" variant="ghost">
                     <Link href={`/number/${n.slug}`}>View</Link>

@@ -40,6 +40,23 @@ export function timeAgo(date: string | Date): string {
   return "just now";
 }
 
+/** Relative time until a future date, e.g. "ends in 2 days". Past dates return "ended". */
+export function timeUntil(date: string | Date): string {
+  const d = typeof date === "string" ? new Date(date) : date;
+  const seconds = Math.floor((d.getTime() - Date.now()) / 1000);
+  if (seconds <= 0) return "ended";
+  const intervals: [number, string][] = [
+    [86400, "day"],
+    [3600, "hour"],
+    [60, "minute"],
+  ];
+  for (const [secs, label] of intervals) {
+    const count = Math.floor(seconds / secs);
+    if (count >= 1) return `ends in ${count} ${label}${count > 1 ? "s" : ""}`;
+  }
+  return "ends in under a minute";
+}
+
 /** Deterministic slug for a listing: the digits themselves are unique + SEO-friendly. */
 export function numberSlug(mobile: string): string {
   return mobile.replace(/\D/g, "").slice(-10);

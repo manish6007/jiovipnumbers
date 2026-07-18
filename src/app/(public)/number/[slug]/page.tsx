@@ -4,6 +4,7 @@ import Link from "next/link";
 import {
   BadgeCheck,
   Eye,
+  Gavel,
   Hash,
   MapPin,
   Signal,
@@ -13,16 +14,18 @@ import {
 import { getNumberBySlug, getRelatedNumbers } from "@/lib/queries";
 import { getCurrentUser } from "@/lib/auth";
 import { getWishlistIds } from "@/app/actions/wishlist";
+import { maybeSettleAuction } from "@/app/actions/bids";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { NumberGrid } from "@/components/marketplace/number-grid";
 import { WhatsAppButton } from "@/components/marketplace/whatsapp-button";
 import { WishlistButton } from "@/components/marketplace/wishlist-button";
 import { BuyNowDialog } from "@/components/marketplace/buy-now-dialog";
+import { BidDialog } from "@/components/marketplace/bid-dialog";
 import { RatingStars } from "@/components/marketplace/rating-stars";
 import { FlapDigits } from "@/components/marketplace/flap-digits";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { formatINR, formatMobile } from "@/lib/utils";
+import { formatINR, formatMobile, timeUntil } from "@/lib/utils";
 
 export const revalidate = 30;
 
@@ -57,8 +60,20 @@ export default async function NumberDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const number = await getNumberBySlug(slug);
+  let number = await getNumberBySlug(slug);
   if (!number) notFound();
+
+  // Lazy settlement: this codebase has no cron, so an auction whose deadline
+  // has passed is closed out the next time its page is read, not exactly at
+  // the deadline.
+  if (
+    number.auction_status === "active" &&
+    number.auction_ends_at &&
+    new Date(number.auction_ends_at) <= new Date()
+  ) {
+    await maybeSettleAuction(number.id);
+    number = (await getNumberBySlug(slug)) ?? number;
+  }
 
   // Fire-and-forget view increment (service role, doesn't block render).
   void createAdminClient()
@@ -75,6 +90,10 @@ export default async function NumberDetailPage({
 
   const isAuthed = !!profile;
   const soldOut = number.status === "sold" || number.status === "reserved";
+  const isAuction = number.auction_status === "active";
+  const displayPrice = isAuction
+    ? number.current_bid ?? number.starting_bid ?? number.selling_price
+    : number.selling_price;
   const partner = number.partner;
 
   const jsonLd = {
@@ -88,7 +107,7 @@ export default async function NumberDetailPage({
     brand: { "@type": "Brand", name: number.operator },
     offers: {
       "@type": "Offer",
-      price: number.selling_price,
+      price: displayPrice,
       priceCurrency: "INR",
       availability: soldOut
         ? "https://schema.org/OutOfStock"
@@ -128,6 +147,11 @@ export default async function NumberDetailPage({
                 {number.has_repeated_digits && (
                   <Badge variant="secondary">Repeating</Badge>
                 )}
+                {isAuction && (
+                  <Badge variant="info">
+                    <Gavel className="h-3 w-3" /> Bidding
+                  </Badge>
+                )}
                 <Badge variant={soldOut ? "destructive" : "success"} className="capitalize">
                   {soldOut ? number.status : "Available"}
                 </Badge>
@@ -136,8 +160,13 @@ export default async function NumberDetailPage({
                 <FlapDigits value={number.mobile_number} size="xl" />
               </div>
               <p className="mt-4 font-display text-3xl font-semibold text-accent">
-                {formatINR(number.selling_price)}
+                {formatINR(displayPrice)}
               </p>
+              {isAuction && (
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {number.bid_count} bids · {number.auction_ends_at && timeUntil(number.auction_ends_at)}
+                </p>
+              )}
             </div>
 
             <CardContent className="grid grid-cols-2 gap-4 p-6 sm:grid-cols-4">
@@ -165,20 +194,36 @@ export default async function NumberDetailPage({
           <Card className="p-6">
             <div className="space-y-4">
               <div>
-                <p className="text-sm text-muted-foreground">Price</p>
-                <p className="text-3xl font-extrabold gradient-text">
-                  {formatINR(number.selling_price)}
+                <p className="text-sm text-muted-foreground">
+                  {isAuction ? `Current bid · ${number.bid_count} bids` : "Price"}
                 </p>
+                <p className="text-3xl font-extrabold gradient-text">
+                  {formatINR(displayPrice)}
+                </p>
+                {isAuction && number.auction_ends_at && (
+                  <p className="text-xs text-muted-foreground">{timeUntil(number.auction_ends_at)}</p>
+                )}
               </div>
 
               <div className="flex gap-2">
-                <BuyNowDialog
-                  numberId={number.id}
-                  mobileNumber={number.mobile_number}
-                  price={number.selling_price}
-                  isAuthed={isAuthed}
-                  disabled={soldOut}
-                />
+                {isAuction ? (
+                  <BidDialog
+                    numberId={number.id}
+                    mobileNumber={number.mobile_number}
+                    currentBid={number.current_bid}
+                    startingBid={number.starting_bid ?? number.selling_price}
+                    isAuthed={isAuthed}
+                    disabled={soldOut}
+                  />
+                ) : (
+                  <BuyNowDialog
+                    numberId={number.id}
+                    mobileNumber={number.mobile_number}
+                    price={number.selling_price}
+                    isAuthed={isAuthed}
+                    disabled={soldOut}
+                  />
+                )}
                 <WishlistButton
                   numberId={number.id}
                   initialSaved={wishlistIds.has(number.id)}

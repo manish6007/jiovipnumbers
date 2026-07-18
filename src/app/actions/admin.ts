@@ -5,7 +5,10 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { getCurrentUser } from "@/lib/auth";
 import { commissionSchema } from "@/lib/validators";
 import { notify, audit } from "@/lib/notifications";
+import { AUCTION_DURATION_HOURS, auctionEndsAt, type AuctionDurationKey } from "@/lib/bidding";
 import type { CommissionType, VerificationStatus, ListingStatus } from "@/types/database";
+
+const SETTINGS_ID = "00000000-0000-0000-0000-000000000001";
 
 /** Guard: require an admin caller. */
 async function requireAdmin() {
@@ -71,13 +74,30 @@ export async function reviewListing(
 
   const { data: number } = await admin
     .from("numbers")
-    .select("mobile_number, partner:partners(user_id)")
+    .select("mobile_number, auction_status, auction_duration_hours, partner:partners(user_id)")
     .eq("id", numberId)
     .maybeSingle();
 
+  // Approving a listing that was created with "list as auction" starts the
+  // clock now — it couldn't start at creation time since the number wasn't
+  // publicly visible (and therefore not biddable) until this moment.
+  const startsAuctionNow =
+    decision === "approved" &&
+    number?.auction_status === "none" &&
+    !!number?.auction_duration_hours;
+
   await admin
     .from("numbers")
-    .update({ listing_status: decision, rejection_reason: reason || null })
+    .update({
+      listing_status: decision,
+      rejection_reason: reason || null,
+      ...(startsAuctionNow
+        ? {
+            auction_status: "active",
+            auction_ends_at: auctionEndsAt(number!.auction_duration_hours!),
+          }
+        : {}),
+    })
     .eq("id", numberId);
 
   const partnerUserId = (number?.partner as { user_id?: string } | null)?.user_id;
@@ -140,6 +160,99 @@ export async function updateCommission(input: {
   if (error) return { error: error.message };
   await audit({ actorId: guard.admin.id, action: "commission.update", metadata: parsed.data });
   revalidatePath("/admin/commission");
+  return { ok: true };
+}
+
+// ----- Bidding -----
+
+/** Admin-only global toggle — bidding stays invisible everywhere until enabled. */
+export async function updateBiddingEnabled(
+  enabled: boolean,
+): Promise<{ ok?: boolean; error?: string }> {
+  const guard = await requireAdmin();
+  if ("error" in guard) return { error: guard.error };
+  const admin = createAdminClient();
+  const { error } = await admin
+    .from("platform_settings")
+    .update({ bidding_enabled: enabled, updated_by: guard.admin.id })
+    .eq("id", SETTINGS_ID);
+  if (error) return { error: error.message };
+  await audit({ actorId: guard.admin.id, action: "bidding.toggle", metadata: { enabled } });
+  revalidatePath("/admin/commission");
+  return { ok: true };
+}
+
+/** Admin puts any already-approved listing up for timed bidding. */
+export async function startAuction(
+  numberId: string,
+  input: { startingBid: number; duration: AuctionDurationKey },
+): Promise<{ ok?: boolean; error?: string }> {
+  const guard = await requireAdmin();
+  if ("error" in guard) return { error: guard.error };
+  if (!input.startingBid || input.startingBid <= 0) {
+    return { error: "Enter a valid starting bid." };
+  }
+
+  const admin = createAdminClient();
+  const { data: settings } = await admin
+    .from("platform_settings")
+    .select("bidding_enabled")
+    .eq("id", SETTINGS_ID)
+    .maybeSingle();
+  if (!settings?.bidding_enabled) return { error: "Bidding is currently disabled." };
+
+  const { data: number } = await admin
+    .from("numbers")
+    .select("id, listing_status, mobile_number, partner:partners(user_id)")
+    .eq("id", numberId)
+    .maybeSingle();
+  if (!number) return { error: "Number not found." };
+  if (number.listing_status !== "approved") {
+    return { error: "Only approved listings can be auctioned." };
+  }
+
+  const { error } = await admin
+    .from("numbers")
+    .update({
+      auction_status: "active",
+      auction_ends_at: auctionEndsAt(AUCTION_DURATION_HOURS[input.duration]),
+      starting_bid: Math.round(input.startingBid),
+      current_bid: null,
+      highest_bidder_id: null,
+      bid_count: 0,
+    })
+    .eq("id", numberId);
+  if (error) return { error: error.message };
+
+  const partnerUserId = (number.partner as { user_id?: string } | null)?.user_id;
+  if (partnerUserId) {
+    await notify([
+      {
+        userId: partnerUserId,
+        type: "auction.started",
+        title: "Your number is now up for bidding",
+        body: `${number.mobile_number} is live for auction.`,
+        link: "/partner/listings",
+      },
+    ]);
+  }
+  await audit({ actorId: guard.admin.id, action: "auction.start", entityType: "number", entityId: numberId });
+  revalidatePath("/admin/listings");
+  return { ok: true };
+}
+
+/** Admin manually ends an auction early without creating a winning order. */
+export async function stopAuction(numberId: string): Promise<{ ok?: boolean; error?: string }> {
+  const guard = await requireAdmin();
+  if ("error" in guard) return { error: guard.error };
+  const admin = createAdminClient();
+  const { error } = await admin
+    .from("numbers")
+    .update({ auction_status: "ended" })
+    .eq("id", numberId);
+  if (error) return { error: error.message };
+  await audit({ actorId: guard.admin.id, action: "auction.stop", entityType: "number", entityId: numberId });
+  revalidatePath("/admin/listings");
   return { ok: true };
 }
 

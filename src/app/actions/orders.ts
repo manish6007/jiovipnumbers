@@ -263,6 +263,41 @@ export async function advanceOrderStatus(
   return { ok: true };
 }
 
+/**
+ * Auction winners get an order with no payment_method yet (they didn't pick one
+ * up front like Buy Now). This lets them choose one afterward from
+ * /dashboard/orders. Razorpay isn't wired into this path in v1 — manual
+ * methods only.
+ */
+export async function chooseWonOrderPaymentMethod(
+  orderId: string,
+  method: Exclude<PaymentMethod, "razorpay">,
+): Promise<{ ok?: boolean; error?: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "Not authenticated." };
+
+  const admin = createAdminClient();
+  const { data: order } = await admin
+    .from("orders")
+    .select("id, customer_id, payment_method")
+    .eq("id", orderId)
+    .maybeSingle();
+  if (!order || order.customer_id !== user.id) return { error: "Order not found." };
+  if (order.payment_method) return { error: "Payment method already set." };
+
+  const { error } = await admin
+    .from("orders")
+    .update({ payment_method: method, payment_status: "awaiting_verification" })
+    .eq("id", orderId);
+  if (error) return { error: error.message };
+
+  revalidatePath("/dashboard/orders");
+  return { ok: true };
+}
+
 /** Admin verifies a manual payment (marks paid + confirms). */
 export async function verifyManualPayment(
   orderId: string,

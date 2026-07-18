@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { getPlatformSettings } from "@/app/actions/bids";
 import { NumberForm } from "@/components/dashboard/number-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { Category } from "@/types/database";
@@ -7,11 +8,10 @@ export const metadata = { title: "Add VIP Number" };
 
 export default async function NewListingPage() {
   const supabase = await createClient();
-  const { data } = await supabase
-    .from("categories")
-    .select("*")
-    .eq("is_active", true)
-    .order("sort_order");
+  const [{ data }, settings] = await Promise.all([
+    supabase.from("categories").select("*").eq("is_active", true).order("sort_order"),
+    getPlatformSettings(),
+  ]);
   const categories = (data as Category[]) ?? [];
 
   return (
@@ -27,7 +27,7 @@ export default async function NewListingPage() {
           <CardTitle>Listing Details</CardTitle>
         </CardHeader>
         <CardContent>
-          <NumberForm categories={categories} />
+          <NumberForm categories={categories} biddingEnabled={settings.bidding_enabled} />
         </CardContent>
       </Card>
     </div>

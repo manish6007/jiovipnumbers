@@ -19,19 +19,28 @@ import {
 } from "@/components/ui/select";
 import { ImageUpload } from "@/components/shared/image-upload";
 import { useToast } from "@/components/ui/use-toast";
+import { Switch } from "@/components/ui/switch";
 import { formatINR } from "@/lib/utils";
+import type { AuctionDurationKey } from "@/lib/bidding";
 import type { Category, VipNumber } from "@/types/database";
 
 const NONE = "__none__";
+const DURATION_LABELS: Record<AuctionDurationKey, string> = {
+  "24h": "24 hours",
+  "3d": "3 days",
+  "7d": "7 days",
+};
 
 export function NumberForm({
   categories,
   existing,
   existingImages = [],
+  biddingEnabled = false,
 }: {
   categories: Category[];
   existing?: VipNumber;
   existingImages?: string[];
+  biddingEnabled?: boolean;
 }) {
   const router = useRouter();
   const { toast } = useToast();
@@ -47,6 +56,8 @@ export function NumberForm({
     description: existing?.description ?? "",
   });
   const [images, setImages] = useState<string[]>(existingImages);
+  const [isAuction, setIsAuction] = useState(false);
+  const [auctionDuration, setAuctionDuration] = useState<AuctionDurationKey>("3d");
   const set = (k: keyof typeof form, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
   const digits = form.mobileNumber.replace(/\D/g, "").slice(-10);
@@ -66,7 +77,12 @@ export function NumberForm({
       };
       const res = existing
         ? await updateNumber(existing.id, payload)
-        : await createNumber({ ...payload, imageUrls: images });
+        : await createNumber({
+            ...payload,
+            imageUrls: images,
+            isAuction,
+            auctionDuration: isAuction ? auctionDuration : undefined,
+          });
       if (res.error) {
         toast({ variant: "destructive", title: res.error });
         return;
@@ -107,7 +123,7 @@ export function NumberForm({
         </div>
 
         <div className="space-y-1.5">
-          <Label>Selling Price (₹) *</Label>
+          <Label>{isAuction ? "Starting Bid (₹) *" : "Selling Price (₹) *"}</Label>
           <Input
             inputMode="numeric"
             value={form.sellingPrice}
@@ -200,6 +216,44 @@ export function NumberForm({
           placeholder="Highlight what makes this number special…"
         />
       </div>
+
+      {!existing && biddingEnabled && (
+        <div className="space-y-3 rounded-xl border border-dashed border-border p-4">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <Label className="text-sm font-semibold">List as timed auction</Label>
+              <p className="text-xs text-muted-foreground">
+                Instead of a fixed price, buyers bid until the timer ends. If nobody
+                bids, it falls back to the price above.
+              </p>
+            </div>
+            <Switch checked={isAuction} onCheckedChange={setIsAuction} />
+          </div>
+          {isAuction && (
+            <div className="space-y-1.5">
+              <Label>Auction Duration</Label>
+              <Select
+                value={auctionDuration}
+                onValueChange={(v) => setAuctionDuration(v as AuctionDurationKey)}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {(Object.keys(DURATION_LABELS) as AuctionDurationKey[]).map((k) => (
+                    <SelectItem key={k} value={k}>
+                      {DURATION_LABELS[k]}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground">
+                The timer starts once admin approves this listing, not now.
+              </p>
+            </div>
+          )}
+        </div>
+      )}
 
       {!existing && (
         <div className="space-y-2">

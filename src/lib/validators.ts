@@ -41,6 +41,11 @@ export const commissionSchema = z.object({
   value: z.coerce.number().min(0),
 });
 
+export const bidSchema = z.object({
+  numberId: z.string().uuid(),
+  amount: z.coerce.number().int().positive("Enter a valid bid amount"),
+});
+
 export const profileSchema = z.object({
   fullName: z.string().min(2, "Name is required"),
   email: z.string().email().optional().or(z.literal("")),

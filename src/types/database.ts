@@ -16,6 +16,7 @@ export type PaymentStatus =
   | "paid"
   | "refunded";
 export type CommissionType = "percentage" | "fixed";
+export type AuctionStatus = "none" | "active" | "ended";
 
 export interface Profile {
   id: string;
@@ -83,7 +84,29 @@ export interface VipNumber {
   is_ascending: boolean;
   is_descending: boolean;
   is_mirror: boolean;
+  auction_status: AuctionStatus;
+  auction_ends_at: string | null;
+  auction_duration_hours: number | null;
+  starting_bid: number | null;
+  current_bid: number | null;
+  highest_bidder_id: string | null;
+  bid_count: number;
   created_at: string;
+  updated_at: string;
+}
+
+export interface Bid {
+  id: string;
+  number_id: string;
+  bidder_id: string;
+  amount: number;
+  created_at: string;
+}
+
+export interface PlatformSettings {
+  id: string;
+  bidding_enabled: boolean;
+  updated_by: string | null;
   updated_at: string;
 }
 

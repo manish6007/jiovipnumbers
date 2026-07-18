@@ -1,16 +1,17 @@
 import Link from "next/link";
-import { BadgeCheck, Eye, MapPin, Sparkles } from "lucide-react";
+import { BadgeCheck, Eye, Gavel, MapPin, Sparkles } from "lucide-react";
 import type { VipNumberWithRelations } from "@/types/database";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { WhatsAppButton } from "./whatsapp-button";
 import { RatingStars } from "./rating-stars";
 import { FlapDigits } from "./flap-digits";
-import { cn, formatINR, formatMobile } from "@/lib/utils";
+import { cn, formatINR, formatMobile, timeUntil } from "@/lib/utils";
 
 export function NumberCard({ number }: { number: VipNumberWithRelations }) {
   const partner = number.partner;
   const soldOut = number.status === "sold" || number.status === "reserved";
+  const isAuction = number.auction_status === "active";
 
   return (
     <div
@@ -25,6 +26,11 @@ export function NumberCard({ number }: { number: VipNumberWithRelations }) {
           {number.is_featured && (
             <Badge variant="premium">
               <Sparkles className="h-3 w-3" /> Premium
+            </Badge>
+          )}
+          {isAuction && (
+            <Badge variant="info">
+              <Gavel className="h-3 w-3" /> Bidding
             </Badge>
           )}
           {number.is_trending && <Badge variant="info">Trending</Badge>}
@@ -61,10 +67,15 @@ export function NumberCard({ number }: { number: VipNumberWithRelations }) {
       {/* price + seller */}
       <div className="mt-4 flex items-end justify-between">
         <div>
-          <p className="text-xs text-muted-foreground">Price</p>
-          <p className="text-xl font-extrabold gradient-text">
-            {formatINR(number.selling_price)}
+          <p className="text-xs text-muted-foreground">
+            {isAuction ? `Current bid · ${number.bid_count} bids` : "Price"}
           </p>
+          <p className="text-xl font-extrabold gradient-text">
+            {formatINR(isAuction ? number.current_bid ?? number.starting_bid ?? 0 : number.selling_price)}
+          </p>
+          {isAuction && number.auction_ends_at && (
+            <p className="text-xs text-muted-foreground">{timeUntil(number.auction_ends_at)}</p>
+          )}
         </div>
         {partner && (
           <div className="text-right">
@@ -82,7 +93,7 @@ export function NumberCard({ number }: { number: VipNumberWithRelations }) {
       {/* actions */}
       <div className="mt-4 flex items-center gap-2">
         <Button asChild variant="default" size="sm" className="flex-1">
-          <Link href={`/number/${number.slug}`}>View Details</Link>
+          <Link href={`/number/${number.slug}`}>{isAuction ? "Place Bid →" : "View Details"}</Link>
         </Button>
         <WhatsAppButton
           vipNumber={number.mobile_number}

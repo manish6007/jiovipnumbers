@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/lib/auth";
 import { StatusBadge } from "@/components/dashboard/status-badge";
 import { PaymentProofUploader } from "@/components/dashboard/payment-proof-uploader";
+import { ChoosePaymentMethod } from "@/components/dashboard/choose-payment-method";
 import { WhatsAppButton } from "@/components/marketplace/whatsapp-button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -74,6 +75,9 @@ export default async function CustomerOrdersPage() {
                   </span>
                   {o.number && (
                     <WhatsAppButton vipNumber={o.number.mobile_number} size="sm" label="Seller" />
+                  )}
+                  {o.payment_status !== "paid" && !o.payment_method && (
+                    <ChoosePaymentMethod orderId={o.id} />
                   )}
                   {o.payment_status !== "paid" &&
                     o.payment_method &&
