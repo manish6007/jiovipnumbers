@@ -126,7 +126,11 @@ async function fetchSection(
     query = query.eq(column, true).order("created_at", { ascending: false });
   }
 
-  const { data } = await query;
+  const { data, error } = await query;
+  if (error) {
+    console.error("fetchSection error", error.message);
+    return [];
+  }
   return (data as unknown as VipNumberWithRelations[]) ?? [];
 }
 
@@ -203,7 +207,11 @@ export async function getRelatedNumbers(
     .neq("id", number.id)
     .limit(limit);
   if (number.category_id) query = query.eq("category_id", number.category_id);
-  const { data } = await query;
+  const { data, error } = await query;
+  if (error) {
+    console.error("getRelatedNumbers error", error.message);
+    return [];
+  }
   return (data as unknown as VipNumberWithRelations[]) ?? [];
 }
 

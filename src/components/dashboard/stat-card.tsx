@@ -14,12 +14,14 @@ export function StatCard({
   hint?: string;
   accent?: "blue" | "green" | "amber" | "rose" | "violet";
 }) {
+  // A restrained, single-family palette (brass, sage, signal, crimson,
+  // switchboard) instead of a rainbow of unrelated stock gradients.
   const accents: Record<string, string> = {
-    blue: "from-blue-500 to-sky-400",
-    green: "from-emerald-500 to-green-400",
-    amber: "from-amber-500 to-yellow-400",
-    rose: "from-rose-500 to-pink-400",
-    violet: "from-violet-500 to-purple-400",
+    blue: "from-[#8C6435] to-[#C9985C]",
+    green: "from-[#3F6B4C] to-[#6B9478]",
+    amber: "from-[#C0602C] to-[#DE9A66]",
+    rose: "from-[#8C3B3B] to-[#B65C5C]",
+    violet: "from-[#202A38] to-[#3A4B61]",
   };
   return (
     <Card className="flex items-center gap-4 p-5">

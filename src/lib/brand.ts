@@ -16,37 +16,37 @@ export type MarkVariant = "crest" | "chip" | "crown";
 
 export const BRAND = {
   name: "JioVIPNumber.com",
-  tagline: "Choose your VIP identity",
-  blueFrom: "#2563eb",
-  blueTo: "#0ea5e9",
-  goldLight: "#fde68a",
-  goldMid: "#f59e0b",
-  goldDeep: "#b45309",
-  gold: "#eab308",
-  navy: "#0b1e46",
-  navy2: "#0a1a3c",
+  tagline: "Your number, your name plate",
+  blueFrom: "#8c6435",
+  blueTo: "#c9985c",
+  goldLight: "#e3cfa0",
+  goldMid: "#8c6435",
+  goldDeep: "#6e4e29",
+  gold: "#a8722e",
+  navy: "#1b2534",
+  navy2: "#141b26",
 } as const;
 
-/** Shared <defs> gradients (gold metallic, blue, diamond) keyed by a unique id. */
+/** Shared <defs> gradients (brass, switchboard, signal gem) keyed by a unique id. */
 function defs(id: string): string {
   return `<defs>
     <linearGradient id="${id}-gold" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#fff2c4"/>
-      <stop offset="0.35" stop-color="#fcd34d"/>
-      <stop offset="0.7" stop-color="#f59e0b"/>
-      <stop offset="1" stop-color="#b45309"/>
+      <stop offset="0" stop-color="#e9d2a6"/>
+      <stop offset="0.35" stop-color="#c9985c"/>
+      <stop offset="0.7" stop-color="#8c6435"/>
+      <stop offset="1" stop-color="#6e4e29"/>
     </linearGradient>
     <linearGradient id="${id}-blue" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#3b82f6"/>
-      <stop offset="1" stop-color="#0ea5e9"/>
+      <stop offset="0" stop-color="#8c6435"/>
+      <stop offset="1" stop-color="#c9985c"/>
     </linearGradient>
     <linearGradient id="${id}-navy" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#12306e"/>
-      <stop offset="1" stop-color="#0a1a3c"/>
+      <stop offset="0" stop-color="#232f41"/>
+      <stop offset="1" stop-color="#141b26"/>
     </linearGradient>
     <linearGradient id="${id}-gem" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#bae6fd"/>
-      <stop offset="1" stop-color="#0284c7"/>
+      <stop offset="0" stop-color="#e3a587"/>
+      <stop offset="1" stop-color="#a34d22"/>
     </linearGradient>
   </defs>`;
 }
@@ -71,11 +71,11 @@ function diamond(cx: number, cy: number, r: number, gemFill: string): string {
   const belt = cy - r * 0.25;
   const bot = cy + r * 1.05;
   return `
-    <g stroke="#e0f2fe" stroke-width="0.5" stroke-linejoin="round">
+    <g stroke="#f7e6d3" stroke-width="0.5" stroke-linejoin="round">
       <path d="M${cx - r} ${belt} L${cx - r * 0.5} ${top} L${cx + r * 0.5} ${top} L${cx + r} ${belt} L${cx} ${bot} Z" fill="${gemFill}"/>
       <path d="M${cx - r} ${belt} L${cx + r} ${belt}" />
-      <path d="M${cx - r * 0.5} ${top} L${cx} ${belt} L${cx + r * 0.5} ${top}" fill="#7dd3fc"/>
-      <path d="M${cx - r} ${belt} L${cx} ${belt} L${cx} ${bot} Z" fill="#0369a1" opacity="0.35"/>
+      <path d="M${cx - r * 0.5} ${top} L${cx} ${belt} L${cx + r * 0.5} ${top}" fill="#e3a587"/>
+      <path d="M${cx - r} ${belt} L${cx} ${belt} L${cx} ${bot} Z" fill="#6e4e29" opacity="0.35"/>
     </g>`;
 }
 

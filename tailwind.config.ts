@@ -14,7 +14,33 @@ const config: Config = {
       screens: { "2xl": "1400px" },
     },
     extend: {
+      fontFamily: {
+        sans: ["var(--font-sans)", "ui-sans-serif", "system-ui", "sans-serif"],
+        display: ["var(--font-display)", "ui-serif", "Georgia", "serif"],
+        mono: ["var(--font-mono)", "ui-monospace", "monospace"],
+      },
       colors: {
+        // Repaint Tailwind's built-in blue/sky/amber scales so every literal
+        // utility class (icon accents, badges, ratings) picks up the site's
+        // brass + signal palette without touching each call site.
+        blue: {
+          50: "#F7F1E4",
+          200: "#E3CFA0",
+          500: "#8C6435",
+          600: "#6E4E29",
+        },
+        sky: {
+          500: "#C9985C",
+        },
+        amber: {
+          300: "#DFA98C",
+          400: "#CB8058",
+          500: "#C0602C",
+          600: "#A34D22",
+          700: "#833D1B",
+          950: "#2A150B",
+        },
+        switchboard: "hsl(var(--switchboard))",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -64,15 +90,15 @@ const config: Config = {
         sm: "calc(var(--radius) - 4px)",
       },
       boxShadow: {
-        glass: "0 8px 32px 0 rgba(31, 58, 147, 0.12)",
-        "glass-lg": "0 16px 48px 0 rgba(31, 58, 147, 0.18)",
-        glow: "0 0 24px 0 rgba(37, 99, 235, 0.35)",
-        gold: "0 6px 22px 0 rgba(180, 120, 10, 0.35)",
-        "gold-lg": "0 10px 32px 0 rgba(180, 120, 10, 0.42)",
+        glass: "0 8px 28px 0 rgba(43, 30, 16, 0.10)",
+        "glass-lg": "0 16px 44px 0 rgba(43, 30, 16, 0.16)",
+        glow: "0 0 22px 0 rgba(140, 100, 53, 0.35)",
+        gold: "0 6px 20px 0 rgba(192, 96, 44, 0.32)",
+        "gold-lg": "0 10px 30px 0 rgba(192, 96, 44, 0.4)",
       },
       backgroundImage: {
         "hero-gradient":
-          "radial-gradient(1200px 600px at 10% -10%, rgba(59,130,246,0.25), transparent), radial-gradient(1000px 500px at 100% 0%, rgba(37,99,235,0.20), transparent)",
+          "radial-gradient(1200px 600px at 10% -10%, rgba(140,100,53,0.12), transparent), radial-gradient(1000px 500px at 100% 0%, rgba(192,96,44,0.10), transparent)",
       },
       keyframes: {
         "accordion-down": {

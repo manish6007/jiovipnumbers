@@ -2,12 +2,45 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import {
+  LayoutDashboard,
+  Package,
+  Heart,
+  User,
+  ListChecks,
+  PlusCircle,
+  Upload,
+  ShoppingBag,
+  Wallet,
+  Users,
+  Store,
+  Percent,
+  ImageIcon,
+  ScrollText,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
+
+const ICONS = {
+  LayoutDashboard,
+  Package,
+  Heart,
+  User,
+  ListChecks,
+  PlusCircle,
+  Upload,
+  ShoppingBag,
+  Wallet,
+  Users,
+  Store,
+  Percent,
+  ImageIcon,
+  ScrollText,
+} as const;
 
 export interface NavItem {
   href: string;
   label: string;
-  icon: React.ElementType;
+  icon: keyof typeof ICONS;
   exact?: boolean;
 }
 
@@ -19,7 +52,7 @@ export function DashboardNav({ items }: { items: NavItem[] }) {
         const active = item.exact
           ? pathname === item.href
           : pathname === item.href || pathname.startsWith(item.href + "/");
-        const Icon = item.icon;
+        const Icon = ICONS[item.icon];
         return (
           <Link
             key={item.href}

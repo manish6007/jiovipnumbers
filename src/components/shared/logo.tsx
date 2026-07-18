@@ -20,8 +20,8 @@ export function Logo({
     <Link href="/" className={cn("flex items-center gap-2", className)}>
       <LogoMark variant={variant} size={size} />
       {showWordmark && (
-        <span className="text-lg font-extrabold tracking-tight">
-          <span className="text-blue-600">Jio</span>
+        <span className="font-display text-lg font-semibold tracking-tight">
+          <span className="text-foreground">Jio</span>
           <span className="gold-text">VIP</span>
           <span className="text-foreground">Number</span>
           {showDotCom && (

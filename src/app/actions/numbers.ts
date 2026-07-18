@@ -8,13 +8,16 @@ import { numberSlug } from "@/lib/utils";
 import { audit, notify, getAdminIds } from "@/lib/notifications";
 import type { NumberStatus } from "@/types/database";
 
-/** Ensure the caller is an approved partner; returns partner or an error. */
+/**
+ * Ensure the caller has a partner account; returns partner or an error.
+ * Pending partners may still prepare listings — public visibility already
+ * requires both the partner and the listing to be approved (see
+ * `searchNumbers` / `fetchSection`), so gating creation here would just be
+ * redundant with what the dashboard banner already tells them.
+ */
 async function requirePartner() {
   const partner = await getCurrentPartner();
   if (!partner) return { error: "Partner account required." as const };
-  if (partner.verification_status !== "approved") {
-    return { error: "Your partner account is pending verification." as const };
-  }
   return { partner };
 }
 

@@ -1,26 +1,17 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import {
-  LayoutDashboard,
-  ListChecks,
-  PlusCircle,
-  Upload,
-  ShoppingBag,
-  Wallet,
-  Clock,
-  XCircle,
-} from "lucide-react";
+import { Clock, XCircle } from "lucide-react";
 import { getCurrentUser, getCurrentPartner } from "@/lib/auth";
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 import type { NavItem } from "@/components/dashboard/dashboard-nav";
 
 const items: NavItem[] = [
-  { href: "/partner", label: "Dashboard", icon: LayoutDashboard, exact: true },
-  { href: "/partner/listings", label: "My Listings", icon: ListChecks },
-  { href: "/partner/listings/new", label: "Add Number", icon: PlusCircle },
-  { href: "/partner/bulk-upload", label: "Bulk Upload", icon: Upload },
-  { href: "/partner/orders", label: "Orders", icon: ShoppingBag },
-  { href: "/partner/earnings", label: "Earnings", icon: Wallet },
+  { href: "/partner", label: "Dashboard", icon: "LayoutDashboard", exact: true },
+  { href: "/partner/listings", label: "My Listings", icon: "ListChecks" },
+  { href: "/partner/listings/new", label: "Add Number", icon: "PlusCircle" },
+  { href: "/partner/bulk-upload", label: "Bulk Upload", icon: "Upload" },
+  { href: "/partner/orders", label: "Orders", icon: "ShoppingBag" },
+  { href: "/partner/earnings", label: "Earnings", icon: "Wallet" },
 ];
 
 export default async function PartnerLayout({

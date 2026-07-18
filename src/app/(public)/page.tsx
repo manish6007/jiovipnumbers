@@ -5,9 +5,8 @@ import { HeroSearch } from "@/components/marketplace/hero-search";
 import { Section } from "@/components/marketplace/number-grid";
 import { CategoryPills } from "@/components/marketplace/category-pills";
 import { BannerCarousel } from "@/components/marketplace/banner-carousel";
-import { LogoEmblem } from "@/components/shared/logo-emblem";
+import { FlapDigits } from "@/components/marketplace/flap-digits";
 import { Button } from "@/components/ui/button";
-import { BRAND } from "@/lib/brand";
 
 export const revalidate = 60;
 
@@ -21,18 +20,14 @@ export default async function HomePage() {
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 -z-10 bg-hero-gradient" />
         <div className="container flex flex-col items-center py-16 text-center sm:py-24">
-          <LogoEmblem width={320} className="mb-8" />
-          <div className="glass mb-6 inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-medium">
-            <Gem className="h-4 w-4 text-amber-500" />
-            {BRAND.tagline}
-          </div>
-          <h1 className="max-w-3xl text-4xl font-extrabold tracking-tight sm:text-6xl">
-            Find your <span className="gradient-text">perfect VIP number</span>
+          <FlapDigits value="9876500000" size="lg" className="mb-8 drop-shadow-sm" />
+
+          <h1 className="max-w-3xl text-balance font-display text-4xl font-semibold tracking-tight sm:text-6xl">
+            Your number is your name plate.
           </h1>
           <p className="mt-4 max-w-xl text-base text-muted-foreground sm:text-lg">
-            Search thousands of premium, fancy and lucky mobile numbers from
-            verified sellers across India. Secure booking, instant WhatsApp
-            enquiry.
+            Search fancy, lucky and repeating patterns from verified dealers
+            across India. Book it, and it&apos;s yours.
           </p>
 
           <div className="mt-8 w-full">
@@ -41,13 +36,10 @@ export default async function HomePage() {
 
           <div className="mt-6 flex flex-wrap items-center justify-center gap-4 text-sm text-muted-foreground">
             <span className="inline-flex items-center gap-1.5">
-              <BadgeCheck className="h-4 w-4 text-amber-500" /> 100% Original
+              <BadgeCheck className="h-4 w-4 text-amber-500" /> Verified dealers
             </span>
             <span className="inline-flex items-center gap-1.5">
-              <Gem className="h-4 w-4 text-amber-500" /> Premium VIP Numbers
-            </span>
-            <span className="inline-flex items-center gap-1.5">
-              <Lock className="h-4 w-4 text-amber-500" /> Trusted &amp; Secure
+              <Lock className="h-4 w-4 text-amber-500" /> Secure booking
             </span>
           </div>
         </div>
@@ -102,7 +94,7 @@ export default async function HomePage() {
       {/* Partner CTA */}
       <section className="container py-16">
         <div className="glass-strong flex flex-col items-center gap-4 rounded-3xl bg-hero-gradient p-10 text-center">
-          <h2 className="text-2xl font-bold sm:text-3xl">
+          <h2 className="font-display text-2xl font-semibold sm:text-3xl">
             Are you a VIP number dealer?
           </h2>
           <p className="max-w-xl text-muted-foreground">

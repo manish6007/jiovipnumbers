@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { WhatsAppButton } from "./whatsapp-button";
 import { RatingStars } from "./rating-stars";
+import { FlapDigits } from "./flap-digits";
 import { cn, formatINR, formatMobile } from "@/lib/utils";
 
 export function NumberCard({ number }: { number: VipNumberWithRelations }) {
@@ -42,10 +43,8 @@ export function NumberCard({ number }: { number: VipNumberWithRelations }) {
       </div>
 
       {/* number */}
-      <Link href={`/number/${number.slug}`} className="block">
-        <p className="vip-number text-center text-2xl font-bold text-foreground sm:text-3xl">
-          {formatMobile(number.mobile_number)}
-        </p>
+      <Link href={`/number/${number.slug}`} className="flex justify-center py-1">
+        <FlapDigits value={number.mobile_number} size="sm" />
       </Link>
 
       <div className="mt-2 flex items-center justify-center gap-3 text-xs text-muted-foreground">

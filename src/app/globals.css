@@ -4,43 +4,51 @@
 
 @layer base {
   :root {
-    --background: 210 40% 98%;
-    --foreground: 222 47% 11%;
+    /* Directory paper: warm ivory ground, ink-brown text — like an old
+       telephone exchange ledger, not a SaaS-blue canvas. */
+    --background: 42 38% 95%;
+    --foreground: 30 15% 13%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
+    --card: 40 45% 98%;
+    --card-foreground: 30 15% 13%;
 
-    --primary: 221 83% 53%;
-    --primary-foreground: 0 0% 100%;
+    /* Primary = brass/copper (jack-plug metal), replacing the generic blue. */
+    --primary: 32 45% 38%;
+    --primary-foreground: 42 60% 97%;
 
-    --secondary: 214 95% 93%;
-    --secondary-foreground: 221 83% 30%;
+    --secondary: 40 38% 91%;
+    --secondary-foreground: 28 50% 26%;
 
-    --muted: 210 40% 96%;
-    --muted-foreground: 215 16% 47%;
+    --muted: 40 22% 90%;
+    --muted-foreground: 30 10% 40%;
 
-    --accent: 213 94% 68%;
-    --accent-foreground: 222 47% 11%;
+    --accent: 16 62% 45%;
+    --accent-foreground: 42 60% 97%;
 
-    --destructive: 0 72% 51%;
+    --destructive: 355 55% 40%;
     --destructive-foreground: 0 0% 100%;
 
-    --success: 142 71% 45%;
+    --success: 140 22% 34%;
     --success-foreground: 0 0% 100%;
 
-    --warning: 38 92% 50%;
+    --warning: 42 80% 42%;
     --warning-foreground: 0 0% 100%;
 
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 221 83% 53%;
+    --border: 36 26% 82%;
+    --input: 36 26% 82%;
+    --ring: 32 45% 38%;
 
-    /* Gold accent (secondary) */
-    --gold: 38 92% 50%;          /* #f59e0b-ish */
-    --gold-deep: 26 90% 37%;     /* #b45309 — contrast-safe gold text on light */
-    --gold-foreground: 30 40% 18%;
+    /* Switchboard: the deep slate-indigo of a manual telephone exchange —
+       used for the flap-tile digits and other dark surfaces. */
+    --switchboard: 214 28% 17%;
 
-    --radius: 1rem;
+    /* "gold" vars retained for existing class names (.gold-text etc.) but
+       repainted to brass so they match the new palette. */
+    --gold: 32 45% 42%;
+    --gold-deep: 28 55% 28%;
+    --gold-foreground: 30 40% 14%;
+
+    --radius: 0.75rem;
   }
 
   * {
@@ -50,47 +58,87 @@
   body {
     @apply bg-background text-foreground antialiased;
     background-image:
-      radial-gradient(1000px 500px at 100% -10%, rgba(59, 130, 246, 0.10), transparent),
-      radial-gradient(900px 500px at -10% 10%, rgba(37, 99, 235, 0.08), transparent);
+      radial-gradient(1000px 500px at 100% -10%, rgba(140, 100, 53, 0.08), transparent),
+      radial-gradient(900px 500px at -10% 10%, rgba(192, 96, 44, 0.06), transparent);
     background-attachment: fixed;
     font-feature-settings: "cv11", "ss01";
   }
 }
 
 @layer components {
-  /* Glassmorphism surface */
+  /* Directory-card surface: opaque warm paper with a hairline border and a
+     soft paper shadow — no blue-tinted glassmorphism. */
   .glass {
-    @apply border border-white/40 bg-white/60 backdrop-blur-xl shadow-glass;
+    @apply border border-border/80 bg-card shadow-glass;
   }
   .glass-strong {
-    @apply border border-white/60 bg-white/80 backdrop-blur-2xl shadow-glass-lg;
+    @apply border border-border bg-card shadow-glass-lg;
   }
   .glass-nav {
-    @apply border-b border-white/40 bg-white/70 backdrop-blur-xl;
+    @apply border-b border-border/70 bg-background/95 backdrop-blur-sm;
   }
 
   .gradient-text {
     @apply bg-gradient-to-r from-blue-600 via-blue-500 to-sky-500 bg-clip-text text-transparent;
   }
 
-  /* Gold accents (secondary). Text uses a deep gold for contrast on light grounds. */
+  /* Brass accents (kept the "gold" class names since they're used across
+     the app, repainted to the brass/copper family). */
   .gold-text {
     @apply bg-gradient-to-b from-amber-500 to-amber-700 bg-clip-text font-extrabold text-transparent;
   }
   .gold-gradient {
-    background-image: linear-gradient(180deg, #fcd34d 0%, #f59e0b 55%, #b45309 100%);
+    background-image: linear-gradient(180deg, #cb8058 0%, #8c6435 55%, #6e4e29 100%);
   }
   .gold-ring {
     @apply ring-2 ring-amber-400/70;
   }
 
   .btn-glow {
-    @apply shadow-glow transition-shadow hover:shadow-[0_0_32px_0_rgba(37,99,235,0.5)];
+    @apply shadow-glow transition-shadow hover:shadow-[0_0_28px_0_rgba(140,100,53,0.45)];
   }
 
-  /* Number typography for VIP numbers */
+  /* Number typography for VIP numbers (fallback, plain-text contexts). */
   .vip-number {
     @apply font-mono font-semibold tracking-wider tabular-nums;
+  }
+
+  /* Split-flap departure-board tiles — the site's signature: numbers are
+     the product, so they get a dedicated display treatment everywhere a
+     VIP number appears (cards, hero, detail page). */
+  .flap-row {
+    @apply inline-flex gap-[3px] sm:gap-1;
+  }
+  .flap-tile {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: hsl(var(--switchboard));
+    color: hsl(42 60% 96%);
+    border-radius: 0.35rem;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.08),
+      0 2px 5px rgba(0, 0, 0, 0.35),
+      0 0 0 1px hsl(var(--gold) / 0.45);
+  }
+  .flap-tile::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.07), transparent 45%, rgba(0, 0, 0, 0.14) 100%);
+    pointer-events: none;
+  }
+  .flap-tile::after {
+    content: "";
+    position: absolute;
+    left: 8%;
+    right: 8%;
+    top: 50%;
+    height: 1px;
+    background: rgba(0, 0, 0, 0.5);
+    transform: translateY(-0.5px);
   }
 }
 
@@ -100,9 +148,9 @@
   height: 10px;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(37, 99, 235, 0.3);
+  background: rgba(140, 100, 53, 0.3);
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(37, 99, 235, 0.5);
+  background: rgba(140, 100, 53, 0.5);
 }

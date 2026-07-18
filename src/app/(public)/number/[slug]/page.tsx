@@ -19,6 +19,7 @@ import { WhatsAppButton } from "@/components/marketplace/whatsapp-button";
 import { WishlistButton } from "@/components/marketplace/wishlist-button";
 import { BuyNowDialog } from "@/components/marketplace/buy-now-dialog";
 import { RatingStars } from "@/components/marketplace/rating-stars";
+import { FlapDigits } from "@/components/marketplace/flap-digits";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { formatINR, formatMobile } from "@/lib/utils";
@@ -131,10 +132,10 @@ export default async function NumberDetailPage({
                   {soldOut ? number.status : "Available"}
                 </Badge>
               </div>
-              <p className="vip-number text-4xl font-extrabold sm:text-5xl">
-                {formatMobile(number.mobile_number)}
-              </p>
-              <p className="mt-4 text-3xl font-extrabold gradient-text">
+              <div className="flex justify-center">
+                <FlapDigits value={number.mobile_number} size="xl" />
+              </div>
+              <p className="mt-4 font-display text-3xl font-semibold text-accent">
                 {formatINR(number.selling_price)}
               </p>
             </div>
