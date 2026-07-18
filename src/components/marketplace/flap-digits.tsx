@@ -16,11 +16,14 @@ export function FlapDigits({
 }) {
   const chars = value.replace(/\s/g, "").split("");
 
+  // Mobile-first widths are kept narrow enough that a full 10-digit number
+  // never forces horizontal scroll on a ~360-390px phone viewport; `sm:`
+  // restores the larger desktop sizing.
   const sizes = {
     sm: "h-6 w-4 text-xs sm:h-7 sm:w-5 sm:text-sm",
-    md: "h-9 w-6 text-base sm:h-10 sm:w-7 sm:text-lg",
-    lg: "h-11 w-8 text-xl sm:h-12 sm:w-9 sm:text-2xl",
-    xl: "h-14 w-10 text-3xl sm:h-16 sm:w-11 sm:text-4xl",
+    md: "h-7 w-5 text-sm sm:h-10 sm:w-7 sm:text-lg",
+    lg: "h-8 w-6 text-base sm:h-12 sm:w-9 sm:text-2xl",
+    xl: "h-9 w-7 text-lg sm:h-16 sm:w-11 sm:text-4xl",
   }[size];
 
   return (
