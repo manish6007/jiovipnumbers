@@ -17,6 +17,7 @@ export type PaymentStatus =
   | "refunded";
 export type CommissionType = "percentage" | "fixed";
 export type AuctionStatus = "none" | "active" | "ended";
+export type DiscountType = "percentage" | "fixed";
 
 export interface Profile {
   id: string;
@@ -147,8 +148,35 @@ export interface Order {
   razorpay_signature: string | null;
   customer_note: string | null;
   admin_note: string | null;
+  coupon_id: string | null;
+  discount_amount: number;
   created_at: string;
   updated_at: string;
+}
+
+export interface Coupon {
+  id: string;
+  code: string;
+  discount_type: DiscountType;
+  discount_value: number;
+  min_order_value: number | null;
+  max_uses: number | null;
+  used_count: number;
+  starts_at: string | null;
+  expires_at: string | null;
+  is_active: boolean;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CouponRedemption {
+  id: string;
+  coupon_id: string;
+  order_id: string;
+  customer_id: string;
+  discount_amount: number;
+  created_at: string;
 }
 
 export interface Wishlist {

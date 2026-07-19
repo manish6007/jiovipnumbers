@@ -7,12 +7,14 @@ import { calculateCommission, DEFAULT_COMMISSION } from "@/lib/commission";
 import { notify, audit, getAdminIds } from "@/lib/notifications";
 import { getRazorpay, verifyPaymentSignature } from "@/lib/razorpay";
 import { getCurrentUser, getCurrentPartner } from "@/lib/auth";
+import { resolveCoupon } from "@/app/actions/coupons";
 import type { OrderStatus, PaymentMethod } from "@/types/database";
 
 interface CreateBookingInput {
   numberId: string;
   paymentMethod: PaymentMethod;
   customerNote?: string;
+  couponCode?: string;
 }
 
 /**
@@ -46,6 +48,20 @@ export async function createBooking(input: CreateBookingInput): Promise<{
     return { error: "This number is no longer available." };
   }
 
+  // Coupon (optional) — resolved and re-validated server-side; never trust a
+  // client-supplied discount. Reduces the price before commission is
+  // calculated, so the partner's earning is recomputed from the discounted
+  // price exactly like any other price change.
+  let discountAmount = 0;
+  let couponId: string | null = null;
+  if (input.couponCode) {
+    const resolved = await resolveCoupon(input.couponCode, number.selling_price);
+    if (!resolved.ok) return { error: resolved.error };
+    discountAmount = resolved.result.discountAmount;
+    couponId = resolved.result.coupon.id;
+  }
+  const discountedPrice = number.selling_price - discountAmount;
+
   // Active commission snapshot.
   const { data: setting } = await admin
     .from("commission_settings")
@@ -53,7 +69,7 @@ export async function createBooking(input: CreateBookingInput): Promise<{
     .eq("is_active", true)
     .maybeSingle();
   const commissionSetting = setting ?? DEFAULT_COMMISSION;
-  const split = calculateCommission(number.selling_price, commissionSetting);
+  const split = calculateCommission(discountedPrice, commissionSetting);
 
   // Create the order + reserve the number.
   const { data: order, error: orderErr } = await admin
@@ -72,11 +88,33 @@ export async function createBooking(input: CreateBookingInput): Promise<{
       payment_status:
         input.paymentMethod === "razorpay" ? "unpaid" : "awaiting_verification",
       customer_note: input.customerNote ?? null,
+      coupon_id: couponId,
+      discount_amount: discountAmount,
     })
     .select("id, order_code")
     .single();
 
   if (orderErr || !order) return { error: orderErr?.message ?? "Could not create booking." };
+
+  if (couponId) {
+    await admin.from("coupon_redemptions").insert({
+      coupon_id: couponId,
+      order_id: order.id,
+      customer_id: user.id,
+      discount_amount: discountAmount,
+    });
+    const { data: couponRow } = await admin
+      .from("coupons")
+      .select("used_count")
+      .eq("id", couponId)
+      .maybeSingle();
+    if (couponRow) {
+      await admin
+        .from("coupons")
+        .update({ used_count: couponRow.used_count + 1 })
+        .eq("id", couponId);
+    }
+  }
 
   await admin.from("numbers").update({ status: "reserved" }).eq("id", number.id);
 

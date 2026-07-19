@@ -16,11 +16,13 @@ interface OrderRow {
   id: string;
   order_code: string;
   price: number;
+  discount_amount: number;
   status: string;
   payment_method: string | null;
   payment_status: string;
   created_at: string;
   number: { mobile_number: string; slug: string } | null;
+  coupon: { code: string } | null;
 }
 
 export default async function CustomerOrdersPage() {
@@ -30,7 +32,7 @@ export default async function CustomerOrdersPage() {
   const { data } = await supabase
     .from("orders")
     .select(
-      "id, order_code, price, status, payment_method, payment_status, created_at, number:numbers(mobile_number, slug)",
+      "id, order_code, price, discount_amount, status, payment_method, payment_status, created_at, number:numbers(mobile_number, slug), coupon:coupons(code)",
     )
     .eq("customer_id", userId!)
     .order("created_at", { ascending: false });
@@ -68,6 +70,11 @@ export default async function CustomerOrdersPage() {
                     Order {o.order_code} · {timeAgo(o.created_at)} ·{" "}
                     <span className="capitalize">{o.payment_method || "—"}</span>
                   </p>
+                  {o.discount_amount > 0 && (
+                    <p className="mt-0.5 text-xs text-success">
+                      Coupon {o.coupon?.code ?? ""} applied · -{formatINR(o.discount_amount)}
+                    </p>
+                  )}
                 </div>
                 <div className="flex flex-wrap items-center gap-3">
                   <span className="text-lg font-extrabold gradient-text">

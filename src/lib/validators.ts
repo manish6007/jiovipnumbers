@@ -46,6 +46,25 @@ export const bidSchema = z.object({
   amount: z.coerce.number().int().positive("Enter a valid bid amount"),
 });
 
+export const couponSchema = z
+  .object({
+    code: z
+      .string()
+      .trim()
+      .min(3, "Code must be at least 3 characters")
+      .transform((v) => v.toUpperCase()),
+    discountType: z.enum(["percentage", "fixed"]),
+    discountValue: z.coerce.number().positive("Enter a valid discount value"),
+    minOrderValue: z.coerce.number().int().min(0).optional().or(z.literal("")),
+    maxUses: z.coerce.number().int().positive().optional().or(z.literal("")),
+    expiresAt: z.string().optional().or(z.literal("")),
+  })
+  .refine(
+    (v) => v.discountType !== "percentage" || v.discountValue <= 100,
+    { message: "Percentage cannot exceed 100.", path: ["discountValue"] },
+  );
+export type CouponInput = z.infer<typeof couponSchema>;
+
 export const profileSchema = z.object({
   fullName: z.string().min(2, "Name is required"),
   email: z.string().email().optional().or(z.literal("")),

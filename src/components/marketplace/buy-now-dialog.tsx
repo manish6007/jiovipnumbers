@@ -13,10 +13,12 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { createBooking, confirmRazorpayPayment } from "@/app/actions/orders";
+import { previewCoupon } from "@/app/actions/coupons";
 import { formatINR, formatMobile } from "@/lib/utils";
 import type { PaymentMethod } from "@/types/database";
 import { cn } from "@/lib/utils";
@@ -62,8 +64,27 @@ export function BuyNowDialog({
   const [method, setMethod] = useState<PaymentMethod>("razorpay");
   const [note, setNote] = useState("");
   const [pending, startTransition] = useTransition();
+  const [couponInput, setCouponInput] = useState("");
+  const [couponPending, startCouponTransition] = useTransition();
+  const [applied, setApplied] = useState<{ code: string; discountAmount: number; finalPrice: number } | null>(null);
+  const [couponError, setCouponError] = useState<string | null>(null);
   const router = useRouter();
   const { toast } = useToast();
+
+  const finalPrice = applied?.finalPrice ?? price;
+
+  function applyCoupon() {
+    setCouponError(null);
+    startCouponTransition(async () => {
+      const res = await previewCoupon(couponInput, price);
+      if (res.error || res.discountAmount === undefined || res.finalPrice === undefined) {
+        setCouponError(res.error || "Invalid coupon");
+        setApplied(null);
+        return;
+      }
+      setApplied({ code: couponInput.trim().toUpperCase(), discountAmount: res.discountAmount, finalPrice: res.finalPrice });
+    });
+  }
 
   function handleBuy() {
     if (!isAuthed) {
@@ -75,6 +96,7 @@ export function BuyNowDialog({
         numberId,
         paymentMethod: method,
         customerNote: note || undefined,
+        couponCode: applied?.code,
       });
       if (res.error && !res.orderId) {
         toast({ variant: "destructive", title: res.error });
@@ -140,11 +162,50 @@ export function BuyNowDialog({
         <DialogHeader>
           <DialogTitle>Book VIP Number</DialogTitle>
           <DialogDescription>
-            {formatMobile(mobileNumber)} · {formatINR(price)}
+            {formatMobile(mobileNumber)} ·{" "}
+            {applied ? (
+              <>
+                <span className="line-through">{formatINR(price)}</span>{" "}
+                <span className="font-semibold text-accent">{formatINR(finalPrice)}</span>
+              </>
+            ) : (
+              formatINR(price)
+            )}
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-3">
+          <div className="space-y-1.5">
+            <Label htmlFor="coupon">Coupon code (optional)</Label>
+            <div className="flex gap-2">
+              <Input
+                id="coupon"
+                value={couponInput}
+                onChange={(e) => {
+                  setCouponInput(e.target.value.toUpperCase());
+                  setApplied(null);
+                  setCouponError(null);
+                }}
+                placeholder="FESTIVE10"
+                className="uppercase"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                onClick={applyCoupon}
+                disabled={!couponInput || couponPending}
+              >
+                {couponPending ? "Checking…" : "Apply"}
+              </Button>
+            </div>
+            {couponError && <p className="text-xs text-destructive">{couponError}</p>}
+            {applied && (
+              <p className="text-xs text-success">
+                Code applied — you save {formatINR(applied.discountAmount)}.
+              </p>
+            )}
+          </div>
+
           <Label>Select payment method</Label>
           <div className="grid grid-cols-2 gap-2">
             {METHODS.map((m) => {
@@ -187,7 +248,7 @@ export function BuyNowDialog({
 
         <DialogFooter>
           <Button onClick={handleBuy} disabled={pending} variant="gradient">
-            {pending ? "Processing…" : `Confirm · ${formatINR(price)}`}
+            {pending ? "Processing…" : `Confirm · ${formatINR(finalPrice)}`}
           </Button>
         </DialogFooter>
       </DialogContent>

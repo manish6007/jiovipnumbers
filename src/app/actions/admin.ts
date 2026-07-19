@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getCurrentUser } from "@/lib/auth";
-import { commissionSchema } from "@/lib/validators";
+import { commissionSchema, couponSchema, type CouponInput } from "@/lib/validators";
 import { notify, audit } from "@/lib/notifications";
 import { AUCTION_DURATION_HOURS, auctionEndsAt, type AuctionDurationKey } from "@/lib/bidding";
 import type { CommissionType, VerificationStatus, ListingStatus } from "@/types/database";
@@ -253,6 +253,91 @@ export async function stopAuction(numberId: string): Promise<{ ok?: boolean; err
   if (error) return { error: error.message };
   await audit({ actorId: guard.admin.id, action: "auction.stop", entityType: "number", entityId: numberId });
   revalidatePath("/admin/listings");
+  return { ok: true };
+}
+
+// ----- Coupons -----
+
+export async function createCoupon(
+  input: CouponInput,
+): Promise<{ ok?: boolean; error?: string }> {
+  const guard = await requireAdmin();
+  if ("error" in guard) return { error: guard.error };
+  const parsed = couponSchema.safeParse(input);
+  if (!parsed.success) return { error: parsed.error.errors[0]?.message };
+
+  const admin = createAdminClient();
+  const { error } = await admin.from("coupons").insert({
+    code: parsed.data.code,
+    discount_type: parsed.data.discountType,
+    discount_value: parsed.data.discountValue,
+    min_order_value: parsed.data.minOrderValue || null,
+    max_uses: parsed.data.maxUses || null,
+    expires_at: parsed.data.expiresAt || null,
+    created_by: guard.admin.id,
+  });
+  if (error) {
+    return {
+      error: error.code === "23505" ? "A coupon with this code already exists." : error.message,
+    };
+  }
+  await audit({ actorId: guard.admin.id, action: "coupon.create", metadata: { code: parsed.data.code } });
+  revalidatePath("/admin/coupons");
+  return { ok: true };
+}
+
+export async function updateCoupon(
+  id: string,
+  input: CouponInput,
+): Promise<{ ok?: boolean; error?: string }> {
+  const guard = await requireAdmin();
+  if ("error" in guard) return { error: guard.error };
+  const parsed = couponSchema.safeParse(input);
+  if (!parsed.success) return { error: parsed.error.errors[0]?.message };
+
+  const admin = createAdminClient();
+  const { error } = await admin
+    .from("coupons")
+    .update({
+      code: parsed.data.code,
+      discount_type: parsed.data.discountType,
+      discount_value: parsed.data.discountValue,
+      min_order_value: parsed.data.minOrderValue || null,
+      max_uses: parsed.data.maxUses || null,
+      expires_at: parsed.data.expiresAt || null,
+    })
+    .eq("id", id);
+  if (error) {
+    return {
+      error: error.code === "23505" ? "A coupon with this code already exists." : error.message,
+    };
+  }
+  await audit({ actorId: guard.admin.id, action: "coupon.update", entityType: "coupon", entityId: id });
+  revalidatePath("/admin/coupons");
+  return { ok: true };
+}
+
+export async function toggleCouponActive(
+  id: string,
+  isActive: boolean,
+): Promise<{ ok?: boolean; error?: string }> {
+  const guard = await requireAdmin();
+  if ("error" in guard) return { error: guard.error };
+  const admin = createAdminClient();
+  const { error } = await admin.from("coupons").update({ is_active: isActive }).eq("id", id);
+  if (error) return { error: error.message };
+  revalidatePath("/admin/coupons");
+  return { ok: true };
+}
+
+export async function deleteCoupon(id: string): Promise<{ ok?: boolean; error?: string }> {
+  const guard = await requireAdmin();
+  if ("error" in guard) return { error: guard.error };
+  const admin = createAdminClient();
+  const { error } = await admin.from("coupons").delete().eq("id", id);
+  if (error) return { error: error.message };
+  await audit({ actorId: guard.admin.id, action: "coupon.delete", entityType: "coupon", entityId: id });
+  revalidatePath("/admin/coupons");
   return { ok: true };
 }
 

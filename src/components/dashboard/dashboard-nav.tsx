@@ -17,6 +17,7 @@ import {
   Percent,
   ImageIcon,
   ScrollText,
+  Tag,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -35,6 +36,7 @@ const ICONS = {
   Percent,
   ImageIcon,
   ScrollText,
+  Tag,
 } as const;
 
 export interface NavItem {
