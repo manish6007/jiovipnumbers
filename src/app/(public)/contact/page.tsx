@@ -38,14 +38,14 @@ export default function ContactPage() {
           <Phone className="h-5 w-5 text-blue-500" />
           <div>
             <p className="font-semibold">Phone</p>
-            <p className="text-sm text-muted-foreground">{wa ? `+${wa}` : "Add your support number"}</p>
+            <p className="text-sm text-muted-foreground">{wa ? `+${wa.replace(/^\+/, "")}` : "Add your support number"}</p>
           </div>
         </div>
         <div className="glass flex items-center gap-3 rounded-2xl p-5">
           <Mail className="h-5 w-5 text-blue-500" />
           <div>
             <p className="font-semibold">Email</p>
-            <p className="text-sm text-muted-foreground">support@jiovipnumber.com</p>
+            <p className="text-sm text-muted-foreground">ashishenterprisesjio@gmail.com</p>
           </div>
         </div>
       </div>
