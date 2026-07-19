@@ -48,6 +48,7 @@ export async function registerPartner(
     .insert({
       user_id: user.id,
       business_name: data.businessName,
+      contact_phone: data.contactPhone.replace(/\D/g, "").slice(-10),
       gst_number: data.gstNumber || null,
       pan_number: data.panNumber || null,
       address: data.address,

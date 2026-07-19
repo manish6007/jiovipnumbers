@@ -8,6 +8,7 @@
 // Runtime: Deno (Supabase Edge Functions). This file is NOT part of the Next build.
 
 import { Webhook } from "https://esm.sh/standardwebhooks@1.0.0";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 interface HookPayload {
   user: { phone?: string | null };
@@ -15,6 +16,34 @@ interface HookPayload {
 }
 
 const MSG91_FLOW_URL = "https://control.msg91.com/api/v5/flow/";
+
+/**
+ * Every deployed Supabase Edge Function automatically gets SUPABASE_URL and
+ * SUPABASE_SERVICE_ROLE_KEY injected — these are reserved names, you do NOT
+ * `supabase secrets set` them yourself (the CLI rejects that). Used here only
+ * to write an audit_logs row per send attempt, same pattern the rest of the
+ * app uses via lib/notifications.ts's audit(). Never logs the OTP itself.
+ */
+function auditClient() {
+  const url = Deno.env.get("SUPABASE_URL");
+  const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  if (!url || !key) return null;
+  return createClient(url, key);
+}
+
+async function logAttempt(mobile: string, ok: boolean, detail?: string) {
+  const client = auditClient();
+  if (!client) return; // best-effort only — never blocks OTP delivery
+  try {
+    await client.from("audit_logs").insert({
+      action: ok ? "otp.sms.sent" : "otp.sms.failed",
+      entity_type: "phone",
+      metadata: { phone_last4: mobile.slice(-4), provider: "msg91", detail: detail?.slice(0, 200) },
+    });
+  } catch (e) {
+    console.error("audit log insert failed:", e);
+  }
+}
 
 Deno.serve(async (req) => {
   try {
@@ -64,9 +93,11 @@ Deno.serve(async (req) => {
     // MSG91 returns 200 with { type: "success" | "error", message }.
     if (!res.ok || /"type"\s*:\s*"error"/.test(text)) {
       console.error("MSG91 send failed:", res.status, text);
+      await logAttempt(mobile, false, text);
       return json(500, `MSG91 error: ${text.slice(0, 300)}`);
     }
 
+    await logAttempt(mobile, true);
     return new Response("{}", {
       status: 200,
       headers: { "Content-Type": "application/json" },

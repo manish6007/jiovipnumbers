@@ -182,6 +182,39 @@ export async function updateBiddingEnabled(
   return { ok: true };
 }
 
+// ----- Auth methods -----
+
+/**
+ * Admin-only toggle for which login methods are available. Phone OTP costs
+ * money per SMS; Email OTP and Google are free via Supabase. Never allow all
+ * three to end up disabled — that would lock everyone out, including admin.
+ */
+export async function updateAuthMethods(input: {
+  phoneOtp: boolean;
+  emailOtp: boolean;
+  googleOauth: boolean;
+}): Promise<{ ok?: boolean; error?: string }> {
+  const guard = await requireAdmin();
+  if ("error" in guard) return { error: guard.error };
+  if (!input.phoneOtp && !input.emailOtp && !input.googleOauth) {
+    return { error: "At least one login method must stay enabled." };
+  }
+  const admin = createAdminClient();
+  const { error } = await admin
+    .from("platform_settings")
+    .update({
+      phone_otp_enabled: input.phoneOtp,
+      email_otp_enabled: input.emailOtp,
+      google_oauth_enabled: input.googleOauth,
+      updated_by: guard.admin.id,
+    })
+    .eq("id", SETTINGS_ID);
+  if (error) return { error: error.message };
+  await audit({ actorId: guard.admin.id, action: "auth_methods.update", metadata: input });
+  revalidatePath("/admin/commission");
+  return { ok: true };
+}
+
 /** Admin puts any already-approved listing up for timed bidding. */
 export async function startAuction(
   numberId: string,

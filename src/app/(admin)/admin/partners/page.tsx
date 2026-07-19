@@ -66,7 +66,7 @@ export default async function AdminPartnersPage({
                     <StatusBadge status={p.verification_status} />
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    {p.profile?.full_name || "—"} · {p.profile?.phone || "—"}
+                    {p.profile?.full_name || "—"} · {p.contact_phone || p.profile?.phone || "—"}
                     {p.profile?.email ? ` · ${p.profile.email}` : ""}
                   </p>
                   <p className="text-xs text-muted-foreground">

@@ -44,6 +44,7 @@ export interface Partner {
   bank_ifsc: string | null;
   logo_url: string | null;
   photo_url: string | null;
+  contact_phone: string | null;
   verification_status: VerificationStatus;
   rejection_reason: string | null;
   rating: number;
@@ -107,6 +108,9 @@ export interface Bid {
 export interface PlatformSettings {
   id: string;
   bidding_enabled: boolean;
+  phone_otp_enabled: boolean;
+  email_otp_enabled: boolean;
+  google_oauth_enabled: boolean;
   updated_by: string | null;
   updated_at: string;
 }

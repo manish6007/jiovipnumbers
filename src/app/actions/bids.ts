@@ -11,7 +11,7 @@ import type { PlatformSettings } from "@/types/database";
 
 const SETTINGS_ID = "00000000-0000-0000-0000-000000000001";
 
-/** Global "is bidding available at all" flag. Public read, admin-only write. */
+/** Global platform toggles (bidding, login methods). Public read, admin-only write. */
 export async function getPlatformSettings(): Promise<PlatformSettings> {
   const admin = createAdminClient();
   const { data } = await admin
@@ -22,6 +22,9 @@ export async function getPlatformSettings(): Promise<PlatformSettings> {
   return (data as PlatformSettings) ?? {
     id: SETTINGS_ID,
     bidding_enabled: false,
+    phone_otp_enabled: true,
+    email_otp_enabled: false,
+    google_oauth_enabled: false,
     updated_by: null,
     updated_at: new Date().toISOString(),
   };

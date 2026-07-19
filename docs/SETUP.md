@@ -179,6 +179,28 @@ See `supabase/functions/send-sms-msg91/README.md` for the exact DLT variable nam
 \* Indicative only — check current pricing. For India volume, **MSG91 is the cheapest working option**;
 **Twilio** is the zero-code fallback if you don't want to deploy a function.
 
+### D. Free alternatives to SMS — Email OTP and Google Sign-In
+
+Phone OTP costs money per SMS regardless of provider. Email OTP and Google OAuth are
+both built into Supabase at **no extra cost**, and this app lets admin toggle all
+three independently from **Admin → Commission → Login Methods** (phone can be turned
+off entirely once traffic doesn't need it).
+
+**Email OTP** — no setup required. Supabase's built-in email sending works out of the
+box (low-volume; add a custom SMTP provider under **Authentication → Settings → SMTP**
+before real traffic, same "test now, scale later" shape as MSG91 for phone).
+
+**Google Sign-In**:
+1. [Google Cloud Console](https://console.cloud.google.com) → **APIs & Services →
+   Credentials** → **Create OAuth client ID** (type: Web application).
+2. **Authorized redirect URI**: `https://<project-ref>.supabase.co/auth/v1/callback`.
+3. Copy the **Client ID** and **Client Secret**.
+4. Supabase → **Authentication → Providers → Google** → enable → paste both → **Save**.
+5. Supabase → **Authentication → URL Configuration → Redirect URLs** → add
+   `https://your-domain.com/auth/callback` (and `http://localhost:3000/auth/callback`
+   for local dev).
+6. In **Admin → Commission → Login Methods**, turn on **Google Sign-In**.
+
 ---
 
 ## 6. Storage buckets

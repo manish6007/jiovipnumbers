@@ -4,6 +4,9 @@ import { isValidIndianMobile } from "./patterns";
 export const partnerRegistrationSchema = z.object({
   fullName: z.string().min(2, "Full name is required"),
   businessName: z.string().min(2, "Business name is required"),
+  contactPhone: z
+    .string()
+    .refine((v) => isValidIndianMobile(v), "Enter a valid 10-digit business contact number"),
   gstNumber: z.string().optional().or(z.literal("")),
   panNumber: z
     .string()

@@ -32,6 +32,13 @@ supabase functions deploy send-sms-msg91 --no-verify-jwt
 
 Function URL: `https://<project-ref>.functions.supabase.co/send-sms-msg91`
 
+> `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` are **not** set here — Supabase
+> injects them into every deployed Edge Function automatically (the CLI rejects
+> `supabase secrets set` on those reserved names). The function uses them only to
+> write a best-effort `audit_logs` row per send attempt (`otp.sms.sent` /
+> `otp.sms.failed`, last 4 digits + provider only — never the OTP itself); nothing
+> breaks if that insert fails, it just won't be logged.
+
 ## Wire it into Supabase Auth
 
 Supabase → **Authentication → Hooks → Send SMS hook** → **Enable** → type **HTTPS** →
