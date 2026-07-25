@@ -18,6 +18,9 @@ const config: Config = {
         sans: ["var(--font-sans)", "ui-sans-serif", "system-ui", "sans-serif"],
         display: ["var(--font-display)", "ui-serif", "Georgia", "serif"],
         mono: ["var(--font-mono)", "ui-monospace", "monospace"],
+        // VIP homepage redesign — additive, opt-in via explicit utility class.
+        poppins: ["var(--font-poppins)", "ui-sans-serif", "system-ui", "sans-serif"],
+        inter: ["var(--font-inter)", "ui-sans-serif", "system-ui", "sans-serif"],
       },
       colors: {
         // Repaint Tailwind's built-in blue/sky/amber scales so every literal
@@ -83,6 +86,35 @@ const config: Config = {
           deep: "hsl(var(--gold-deep))",
           foreground: "hsl(var(--gold-foreground))",
         },
+        // VIP homepage redesign — additive, literal-hex tokens (not threaded
+        // through the HSL primary/accent system) so out-of-scope pages that
+        // consume --primary/--accent/blue/sky/amber are unaffected.
+        vipCream: "var(--vip-cream)",
+        vipCardBorder: "var(--vip-card-border)",
+        vipTile: "var(--vip-tile-bg)",
+        vipNavy: {
+          900: "var(--vip-navy-900)",
+          800: "var(--vip-navy-800)",
+        },
+        vipPurple: {
+          800: "var(--vip-purple-800)",
+          700: "var(--vip-purple-700)",
+        },
+        vipOrange: {
+          from: "var(--vip-orange-from)",
+          to: "var(--vip-orange-to)",
+        },
+        vipWhatsapp: "var(--vip-whatsapp)",
+        rank: {
+          diamondBg: "var(--vip-rank-diamond-bg)",
+          diamondFg: "var(--vip-rank-diamond-fg)",
+          platinumBg: "var(--vip-rank-platinum-bg)",
+          platinumFg: "var(--vip-rank-platinum-fg)",
+          goldBg: "var(--vip-rank-gold-bg)",
+          goldFg: "var(--vip-rank-gold-fg)",
+          newBg: "var(--vip-rank-new-bg)",
+          newFg: "var(--vip-rank-new-fg)",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -99,6 +131,9 @@ const config: Config = {
       backgroundImage: {
         "hero-gradient":
           "radial-gradient(1200px 600px at 10% -10%, rgba(140,100,53,0.12), transparent), radial-gradient(1000px 500px at 100% 0%, rgba(192,96,44,0.10), transparent)",
+        "vip-hero-gradient":
+          "radial-gradient(circle at 15% 20%, #3a2560 0%, transparent 45%), radial-gradient(circle at 90% 10%, rgba(124,58,237,0.2) 0%, transparent 40%), linear-gradient(135deg, #0f1626 0%, #1a2140 45%, #2a1a4a 100%)",
+        "vip-cta-gradient": "linear-gradient(135deg, #f0a83c, #d1791f)",
       },
       keyframes: {
         "accordion-down": {
@@ -116,11 +151,22 @@ const config: Config = {
         shimmer: {
           "100%": { transform: "translateX(100%)" },
         },
+        "vip-marquee": {
+          from: { transform: "translateX(0)" },
+          to: { transform: "translateX(-50%)" },
+        },
+        "vip-float-card": {
+          "0%, 100%": { transform: "translateY(0) rotate(var(--vip-rot, 0deg))" },
+          "50%": { transform: "translateY(-10px) rotate(var(--vip-rot, 0deg))" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         float: "float 6s ease-in-out infinite",
+        "vip-marquee": "vip-marquee 30s linear infinite",
+        "vip-marquee-fast": "vip-marquee 34s linear infinite",
+        "vip-float-card": "vip-float-card 5s ease-in-out infinite",
       },
     },
   },

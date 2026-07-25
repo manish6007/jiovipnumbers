@@ -1,11 +1,18 @@
 import Link from "next/link";
-import { BadgeCheck, Gem, Lock, Store } from "lucide-react";
+import { Gem } from "lucide-react";
 import { getHomeSections } from "@/lib/queries";
 import { HeroSearch } from "@/components/marketplace/hero-search";
+import { HeroStats } from "@/components/marketplace/hero-stats";
+import { HeroFloatingCards } from "@/components/marketplace/hero-floating-cards";
 import { Section } from "@/components/marketplace/number-grid";
 import { CategoryPills } from "@/components/marketplace/category-pills";
 import { BannerCarousel } from "@/components/marketplace/banner-carousel";
-import { FlapDigits } from "@/components/marketplace/flap-digits";
+import { OfferRibbon } from "@/components/marketplace/offer-ribbon";
+import { QuickCategoryCards } from "@/components/marketplace/quick-category-cards";
+import { HowItWorks } from "@/components/marketplace/how-it-works";
+import { DealerCta } from "@/components/marketplace/dealer-cta";
+import { Testimonials } from "@/components/marketplace/testimonials";
+import { TrustBadges } from "@/components/marketplace/trust-badges";
 import { Button } from "@/components/ui/button";
 
 export const revalidate = 60;
@@ -14,41 +21,53 @@ export default async function HomePage() {
   const { featured, trending, newest, business, lucky, categories, banners } =
     await getHomeSections();
 
+  const hasAny =
+    featured.length + trending.length + newest.length + business.length + lucky.length > 0;
+
   return (
     <>
+      <OfferRibbon />
+
       {/* Hero */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 -z-10 bg-hero-gradient" />
-        <div className="container flex flex-col items-center pt-16 text-center sm:pt-24">
-          <FlapDigits value="9876500000" size="lg" className="mb-8 drop-shadow-sm" />
+      <section className="vip-hero-bg relative overflow-hidden py-9 sm:py-14">
+        <div className="container grid grid-cols-1 items-center gap-10 lg:grid-cols-2">
+          <div>
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-[#f0a83c]/50 bg-white/10 px-3.5 py-1.5 text-xs font-bold text-[#f0c988]">
+              🚀 LIMITED TIME ONLY
+            </span>
+            <h1 className="vip-heading-gradient font-poppins mt-5 text-4xl font-black leading-[1.08] sm:text-5xl">
+              Apna Number,
+              <br />
+              Apni Shaan.
+            </h1>
+            <p className="mt-4 max-w-lg text-base font-medium text-white/70">
+              India ka sabse bharosemand VIP number bazaar — fancy, lucky aur premium Jio numbers,
+              verified dealers se, seedha aapke ghar.
+            </p>
 
-          <h1 className="max-w-3xl text-balance font-display text-4xl font-semibold tracking-tight sm:text-6xl">
-            Your number is your name plate.
-          </h1>
-          <p className="mt-4 max-w-xl text-base text-muted-foreground sm:text-lg">
-            Search fancy, lucky and repeating patterns from verified dealers
-            across India. Book it, and it&apos;s yours.
-          </p>
+            <div className="mt-6">
+              <HeroSearch />
+            </div>
 
-          <div className="mt-8 w-full">
-            <HeroSearch />
+            <HeroStats />
           </div>
 
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-4 text-sm text-muted-foreground">
-            <span className="inline-flex items-center gap-1.5">
-              <BadgeCheck className="h-4 w-4 text-amber-500" /> Verified dealers
-            </span>
-            <span className="inline-flex items-center gap-1.5">
-              <Lock className="h-4 w-4 text-amber-500" /> Secure booking
-            </span>
-          </div>
+          <HeroFloatingCards numbers={featured.length ? featured : newest} />
         </div>
       </section>
 
       <BannerCarousel banners={banners} />
 
+      <QuickCategoryCards />
+
       <CategoryPills categories={categories} />
 
+      <Section
+        title="🔥 Newly Added"
+        subtitle="Fresh listings from our verified partners"
+        href="/search?sort=newest"
+        numbers={newest}
+      />
       <Section
         title="Featured Numbers"
         subtitle="Hand-picked premium numbers"
@@ -60,12 +79,6 @@ export default async function HomePage() {
         subtitle="Most viewed this week"
         href="/search?sort=trending"
         numbers={trending}
-      />
-      <Section
-        title="Newly Added"
-        subtitle="Fresh listings from our partners"
-        href="/search?sort=newest"
-        numbers={newest}
       />
       <Section
         title="Business Numbers"
@@ -80,50 +93,27 @@ export default async function HomePage() {
         numbers={lucky}
       />
 
-      <EmptyStateIfNoInventory
-        hasAny={
-          featured.length +
-            trending.length +
-            newest.length +
-            business.length +
-            lucky.length >
-          0
-        }
-      />
+      {!hasAny && <EmptyStateIfNoInventory />}
 
-      {/* Partner CTA */}
-      <section className="container py-16">
-        <div className="glass-strong flex flex-col items-center gap-4 rounded-3xl bg-hero-gradient p-10 text-center">
-          <h2 className="font-display text-2xl font-semibold sm:text-3xl">
-            Are you a VIP number dealer?
-          </h2>
-          <p className="max-w-xl text-muted-foreground">
-            Join JioVIPNumber.com as a verified partner. List your inventory,
-            reach thousands of buyers and manage sales from one dashboard.
-          </p>
-          <Button asChild variant="gold" size="lg">
-            <Link href="/register/partner">
-              <Store className="h-5 w-5" /> Become a Partner
-            </Link>
-          </Button>
-        </div>
-      </section>
+      <HowItWorks />
+      <DealerCta />
+      <Testimonials />
+      <TrustBadges />
     </>
   );
 }
 
-function EmptyStateIfNoInventory({ hasAny }: { hasAny: boolean }) {
-  if (hasAny) return null;
+function EmptyStateIfNoInventory() {
   return (
     <section className="container py-16">
-      <div className="glass mx-auto max-w-xl rounded-2xl p-10 text-center">
+      <div className="mx-auto max-w-xl rounded-2xl border border-vipCardBorder bg-white p-10 text-center">
         <Gem className="mx-auto mb-3 h-8 w-8 text-amber-500" />
         <h3 className="text-xl font-semibold">Inventory coming soon</h3>
         <p className="mt-2 text-sm text-muted-foreground">
           Approved listings will appear here. If you&apos;re a dealer, be the
           first to list your VIP numbers.
         </p>
-        <Button asChild variant="gradient" className="mt-5">
+        <Button asChild variant="vipOrange" className="mt-5">
           <Link href="/register/partner">Become a Partner</Link>
         </Button>
       </div>

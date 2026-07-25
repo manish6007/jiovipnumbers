@@ -1,44 +1,53 @@
 import Link from "next/link";
-import { BadgeCheck, Eye, Gavel, MapPin, Sparkles } from "lucide-react";
+import { BadgeCheck, Eye, Gavel, MapPin } from "lucide-react";
 import type { VipNumberWithRelations } from "@/types/database";
-import { Badge } from "@/components/ui/badge";
+import { Badge, type BadgeProps } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { WhatsAppButton } from "./whatsapp-button";
 import { RatingStars } from "./rating-stars";
 import { FlapDigits } from "./flap-digits";
-import { cn, formatINR, formatMobile, timeUntil } from "@/lib/utils";
+import { cn, formatINR, timeUntil } from "@/lib/utils";
+
+export type Rank = "diamond" | "platinum" | "gold" | "new";
+
+export const RANK_LABEL: Record<Rank, string> = {
+  diamond: "Diamond",
+  platinum: "Platinum",
+  gold: "Gold",
+  new: "New",
+};
+
+export const RANK_BADGE_VARIANT: Record<Rank, BadgeProps["variant"]> = {
+  diamond: "diamond",
+  platinum: "platinum",
+  gold: "goldRank",
+  new: "newRank",
+};
+
+/**
+ * There's no `rank` column in the schema, so we derive a display tier from
+ * fields that already exist. Easy to retune the thresholds later.
+ */
+export function getRank(number: VipNumberWithRelations): Rank {
+  const ageMs = Date.now() - new Date(number.created_at).getTime();
+  if (ageMs < 14 * 24 * 60 * 60 * 1000) return "new";
+  if (number.is_featured) return "diamond";
+  if (number.is_trending) return "gold";
+  return "platinum";
+}
 
 export function NumberCard({ number }: { number: VipNumberWithRelations }) {
   const partner = number.partner;
   const soldOut = number.status === "sold" || number.status === "reserved";
   const isAuction = number.auction_status === "active";
+  const rank = getRank(number);
 
   return (
-    <div
-      className={cn(
-        "group glass relative flex flex-col overflow-hidden rounded-2xl p-5 transition-all hover:-translate-y-1 hover:shadow-glass-lg",
-        number.is_featured && "ring-2 ring-amber-400/60",
-      )}
-    >
-      {/* badges */}
-      <div className="mb-3 flex items-center justify-between">
-        <div className="flex flex-wrap gap-1.5">
-          {number.is_featured && (
-            <Badge variant="premium">
-              <Sparkles className="h-3 w-3" /> Premium
-            </Badge>
-          )}
-          {isAuction && (
-            <Badge variant="info">
-              <Gavel className="h-3 w-3" /> Bidding
-            </Badge>
-          )}
-          {number.is_trending && <Badge variant="info">Trending</Badge>}
-          {number.is_mirror && <Badge variant="secondary">Mirror</Badge>}
-          {number.category?.name && !number.is_featured && (
-            <Badge variant="outline">{number.category.name}</Badge>
-          )}
-        </div>
+    <div className="group flex flex-col rounded-2xl border border-vipCardBorder bg-white p-4 transition-transform hover:-translate-y-1 hover:shadow-lg">
+      <div className="mb-2.5 flex items-center justify-between">
+        <Badge variant={RANK_BADGE_VARIANT[rank]} className="uppercase tracking-wide">
+          {RANK_LABEL[rank]}
+        </Badge>
         {soldOut ? (
           <Badge variant="destructive" className="capitalize">
             {number.status}
@@ -48,12 +57,11 @@ export function NumberCard({ number }: { number: VipNumberWithRelations }) {
         )}
       </div>
 
-      {/* number */}
-      <Link href={`/number/${number.slug}`} className="flex justify-center py-1">
-        <FlapDigits value={number.mobile_number} size="sm" />
+      <Link href={`/number/${number.slug}`} className="mb-2 flex justify-center py-1">
+        <FlapDigits value={number.mobile_number} size="sm" flat />
       </Link>
 
-      <div className="mt-2 flex items-center justify-center gap-3 text-xs text-muted-foreground">
+      <p className="mb-1.5 flex items-center justify-center gap-3 text-center text-xs text-muted-foreground">
         {number.circle && (
           <span className="inline-flex items-center gap-1">
             <MapPin className="h-3 w-3" /> {number.circle}
@@ -62,20 +70,28 @@ export function NumberCard({ number }: { number: VipNumberWithRelations }) {
         <span className="inline-flex items-center gap-1">
           <Eye className="h-3 w-3" /> {number.views}
         </span>
-      </div>
+      </p>
 
-      {/* price + seller */}
-      <div className="mt-4 flex items-end justify-between">
+      {isAuction && (
+        <p className="mb-1.5 flex items-center justify-center gap-1 text-center text-xs font-bold text-[#7c3aed]">
+          <Gavel className="h-3 w-3" /> {number.bid_count} bids
+          {number.auction_ends_at ? ` · ${timeUntil(number.auction_ends_at)}` : ""}
+        </p>
+      )}
+
+      <div className="mb-3 flex items-end justify-between">
         <div>
-          <p className="text-xs text-muted-foreground">
-            {isAuction ? `Current bid · ${number.bid_count} bids` : "Price"}
+          <p className="text-[11px] text-muted-foreground">
+            {isAuction ? "Current Bid" : "Price"}
           </p>
-          <p className="text-xl font-extrabold gradient-text">
+          <p
+            className={cn(
+              "font-poppins text-lg font-extrabold",
+              isAuction ? "text-[#7c3aed]" : "text-[#d1791f]",
+            )}
+          >
             {formatINR(isAuction ? number.current_bid ?? number.starting_bid ?? 0 : number.selling_price)}
           </p>
-          {isAuction && number.auction_ends_at && (
-            <p className="text-xs text-muted-foreground">{timeUntil(number.auction_ends_at)}</p>
-          )}
         </div>
         {partner && (
           <div className="text-right">
@@ -90,15 +106,15 @@ export function NumberCard({ number }: { number: VipNumberWithRelations }) {
         )}
       </div>
 
-      {/* actions */}
-      <div className="mt-4 flex items-center gap-2">
-        <Button asChild variant="default" size="sm" className="flex-1">
+      <div className="flex items-center gap-2">
+        <Button asChild variant="vipOrange" size="sm" className="flex-1">
           <Link href={`/number/${number.slug}`}>{isAuction ? "Place Bid →" : "View Details"}</Link>
         </Button>
         <WhatsAppButton
           vipNumber={number.mobile_number}
           price={number.selling_price}
           size="icon"
+          className="rounded-xl"
         />
       </div>
     </div>

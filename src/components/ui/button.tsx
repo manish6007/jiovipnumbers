@@ -23,6 +23,11 @@ const buttonVariants = cva(
         success: "bg-success text-success-foreground hover:bg-success/90",
         whatsapp: "bg-[#25D366] text-white hover:bg-[#1ebe5a]",
         link: "text-primary underline-offset-4 hover:underline",
+        // VIP homepage redesign — orange-gold CTA gradient. Additive: the
+        // existing `gradient` variant (blue/sky) is reused across
+        // admin/dashboard/partner/auth and must not be repainted.
+        vipOrange:
+          "vip-cta-gradient text-white shadow-md hover:brightness-105",
       },
       size: {
         default: "h-11 px-5 py-2",

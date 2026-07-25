@@ -11,9 +11,9 @@ export function CategoryPills({ categories }: { categories: Category[] }) {
           <Link
             key={c.id}
             href={`/search?category=${c.slug}`}
-            className="glass inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium transition-all hover:-translate-y-0.5 hover:text-primary"
+            className="inline-flex items-center gap-1.5 rounded-full border border-vipCardBorder bg-white px-4 py-2 text-sm font-semibold text-foreground/80 transition-colors hover:border-[#d1791f] hover:text-[#d1791f]"
           >
-            <Sparkles className="h-3.5 w-3.5 text-blue-500" />
+            <Sparkles className="h-3.5 w-3.5" />
             {c.name}
           </Link>
         ))}

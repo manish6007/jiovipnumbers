@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Fraunces, IBM_Plex_Sans, Space_Mono } from "next/font/google";
+import { Fraunces, IBM_Plex_Sans, Inter, Poppins, Space_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 
@@ -18,6 +18,20 @@ const spaceMono = Space_Mono({
   subsets: ["latin"],
   weight: ["400", "700"],
   variable: "--font-mono",
+});
+// VIP homepage redesign — additive fonts, used explicitly via `font-poppins`/
+// `font-inter` only in the restyled homepage/header/footer/number-card, so
+// `font-sans`/`font-display` (and everything that already relies on them)
+// stay exactly as they are.
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["700", "800", "900"],
+  variable: "--font-poppins",
+});
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-inter",
 });
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://jiovipnumber.com";
@@ -68,7 +82,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${plexSans.variable} ${fraunces.variable} ${spaceMono.variable}`}
+      className={`${plexSans.variable} ${fraunces.variable} ${spaceMono.variable} ${poppins.variable} ${inter.variable}`}
     >
       <body className="min-h-screen font-sans">
         {children}

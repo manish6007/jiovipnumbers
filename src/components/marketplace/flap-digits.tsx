@@ -9,10 +9,15 @@ export function FlapDigits({
   value,
   size = "md",
   className,
+  flat = false,
 }: {
   value: string;
   size?: "sm" | "md" | "lg" | "xl";
   className?: string;
+  /** VIP homepage redesign: render flat dark tiles (no bevel/shine) instead
+   *  of the default split-flap look. Opt-in only, default preserves the
+   *  existing appearance everywhere this isn't passed. */
+  flat?: boolean;
 }) {
   const chars = value.replace(/\s/g, "").split("");
 
@@ -29,7 +34,10 @@ export function FlapDigits({
   return (
     <span className={cn("flap-row", className)}>
       {chars.map((ch, i) => (
-        <span key={i} className={cn("flap-tile font-mono font-bold tabular-nums", sizes)}>
+        <span
+          key={i}
+          className={cn(flat ? "vip-tile" : "flap-tile", "font-mono font-bold tabular-nums", sizes)}
+        >
           {ch}
         </span>
       ))}

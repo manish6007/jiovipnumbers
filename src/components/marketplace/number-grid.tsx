@@ -29,7 +29,7 @@ export function Section({
     <section className="container py-8">
       <div className="mb-5 flex items-end justify-between">
         <div>
-          <h2 className="font-display text-2xl font-semibold tracking-tight sm:text-3xl">{title}</h2>
+          <h2 className="font-poppins text-2xl font-extrabold tracking-tight sm:text-3xl">{title}</h2>
           {subtitle && (
             <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p>
           )}

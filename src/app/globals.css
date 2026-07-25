@@ -49,6 +49,32 @@
     --gold-foreground: 30 40% 14%;
 
     --radius: 0.75rem;
+
+    /* VIP homepage redesign — additive tokens, scoped via `vip-*` utility
+       classes below. Kept separate from the brass system above so
+       search/detail/checkout/admin/dashboard pages (out of scope this pass)
+       are unaffected. */
+    --vip-cream: #fbf7ef;
+    --vip-card-border: #f0ede3;
+    --vip-tile-bg: #12192b;
+    --vip-navy-900: #0f1626;
+    --vip-navy-800: #1a2140;
+    --vip-purple-800: #2a1a4a;
+    --vip-purple-700: #3a2560;
+    --vip-orange-from: #f0a83c;
+    --vip-orange-to: #d1791f;
+    --vip-whatsapp: #25d366;
+    --vip-red-from: #e0432b;
+    --vip-red-to: #c22a1f;
+
+    --vip-rank-diamond-bg: #ede9fe;
+    --vip-rank-diamond-fg: #7c3aed;
+    --vip-rank-platinum-bg: #e5e7eb;
+    --vip-rank-platinum-fg: #475569;
+    --vip-rank-gold-bg: #fdecd2;
+    --vip-rank-gold-fg: #a8722e;
+    --vip-rank-new-bg: #dbeafe;
+    --vip-rank-new-fg: #2563eb;
   }
 
   * {
@@ -139,6 +165,69 @@
     height: 1px;
     background: rgba(0, 0, 0, 0.5);
     transform: translateY(-0.5px);
+  }
+
+  /* VIP homepage redesign — flat digit tile (no bevel/shine), opt-in via
+     FlapDigits' `flat` prop. Used on the homepage + restyled NumberCard. */
+  .vip-tile {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--vip-tile-bg);
+    color: #fff;
+    border-radius: 0.2rem;
+  }
+
+  .vip-hero-bg {
+    background:
+      radial-gradient(circle at 15% 20%, var(--vip-purple-700) 0%, transparent 45%),
+      radial-gradient(circle at 90% 10%, rgba(124, 58, 237, 0.2) 0%, transparent 40%),
+      linear-gradient(135deg, var(--vip-navy-900) 0%, var(--vip-navy-800) 45%, var(--vip-purple-800) 100%);
+  }
+
+  .vip-cta-gradient {
+    background-image: linear-gradient(135deg, var(--vip-orange-from), var(--vip-orange-to));
+  }
+
+  .vip-ribbon-gradient {
+    background-image: linear-gradient(90deg, var(--vip-red-from), var(--vip-red-to));
+  }
+
+  .vip-heading-gradient {
+    background-image: linear-gradient(135deg, #f7e3bb, #f0a83c 55%, #d1791f);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+  }
+
+  /* Auto-scrolling marquee: track duplicates its children, animates one
+     full-width translate so the loop is seamless. */
+  .vip-marquee-track {
+    display: flex;
+    width: max-content;
+    animation: vip-marquee 30s linear infinite;
+  }
+  .vip-marquee-track:hover {
+    animation-play-state: paused;
+  }
+}
+
+@keyframes vip-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes vip-float-card {
+  0%,
+  100% {
+    transform: translateY(0) rotate(var(--vip-rot, 0deg));
+  }
+  50% {
+    transform: translateY(-10px) rotate(var(--vip-rot, 0deg));
   }
 }
 
