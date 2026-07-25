@@ -19,7 +19,7 @@ export default async function HomePage() {
       {/* Hero */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 -z-10 bg-hero-gradient" />
-        <div className="container flex flex-col items-center pb-8 pt-16 text-center sm:pb-12 sm:pt-24">
+        <div className="container flex flex-col items-center pt-16 text-center sm:pt-24">
           <FlapDigits value="9876500000" size="lg" className="mb-8 drop-shadow-sm" />
 
           <h1 className="max-w-3xl text-balance font-display text-4xl font-semibold tracking-tight sm:text-6xl">
