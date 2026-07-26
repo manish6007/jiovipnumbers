@@ -23,7 +23,7 @@ export function HeroFloatingCards({ numbers }: { numbers: VipNumberWithRelations
   return (
     <div className="relative hidden h-[420px] min-w-[280px] lg:block">
       <div
-        className="absolute -top-1.5 right-4 flex h-24 w-24 rotate-[8deg] flex-col items-center justify-center rounded-full bg-gradient-to-br from-[#f7e3bb] to-[#d1791f] font-poppins text-2xl font-black text-[#3a2508] shadow-[0_10px_26px_rgba(209,121,31,0.5)]"
+        className="absolute -top-1.5 right-4 flex h-24 w-24 rotate-[8deg] flex-col items-center justify-center rounded-full bg-gradient-to-br from-[#f7e3bb] to-[#d1791f] font-display text-2xl font-black text-[#3a2508] shadow-[0_10px_26px_rgba(209,121,31,0.5)]"
         style={{ animation: "vip-float-card 2.4s ease-in-out infinite" }}
       >
         <span>10%</span>
@@ -56,7 +56,7 @@ export function HeroFloatingCards({ numbers }: { numbers: VipNumberWithRelations
             <div className="flex justify-center">
               <FlapDigits value={n.mobile_number} size="sm" flat />
             </div>
-            <p className="mt-2 text-center font-poppins text-sm font-extrabold text-[#d1791f]">
+            <p className="mt-2 text-center font-display text-sm font-extrabold text-[#d1791f]">
               {formatINR(n.selling_price)}
             </p>
           </div>

@@ -20,10 +20,10 @@ const badgeVariants = cva(
         // VIP homepage redesign — rank badges (literal hex, additive; see
         // NumberCard's getRank()). Kept separate from `gold`/`info` above
         // since those are used elsewhere with different meanings.
-        diamond: "border-transparent bg-[#ede9fe] text-[#7c3aed]",
+        diamond: "border-transparent bg-switchboard text-amber-200",
         platinum: "border-transparent bg-[#e5e7eb] text-[#475569]",
         goldRank: "border-transparent bg-[#fdecd2] text-[#a8722e]",
-        newRank: "border-transparent bg-[#dbeafe] text-[#2563eb]",
+        newRank: "border-transparent bg-blue-500/15 text-blue-600",
       },
     },
     defaultVariants: { variant: "default" },

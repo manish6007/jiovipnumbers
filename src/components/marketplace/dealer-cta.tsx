@@ -6,7 +6,7 @@ export function DealerCta() {
     <section className="container py-10">
       <div className="vip-hero-bg grid grid-cols-1 items-center gap-8 rounded-3xl p-8 sm:p-10 lg:grid-cols-[1fr_auto]">
         <div>
-          <p className="font-poppins text-2xl font-extrabold text-white sm:text-3xl">
+          <p className="font-display text-2xl font-extrabold text-white sm:text-3xl">
             Become a Dealer, Earn 10–15% Commission
           </p>
           <p className="mt-2 max-w-xl text-sm text-white/70">

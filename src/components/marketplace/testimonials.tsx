@@ -14,7 +14,7 @@ export function Testimonials() {
   return (
     <section className="container py-10">
       <div className="mb-6 flex flex-wrap items-baseline justify-center gap-2.5">
-        <p className="font-poppins text-2xl font-extrabold">What Our Customers Say</p>
+        <p className="font-display text-2xl font-extrabold">What Our Customers Say</p>
         <span className="text-sm font-bold text-[#d1791f]">★ 4.8/5 (2,500+ reviews)</span>
       </div>
       <div className="overflow-hidden">

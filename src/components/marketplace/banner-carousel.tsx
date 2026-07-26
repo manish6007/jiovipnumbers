@@ -14,7 +14,7 @@ export function BannerCarousel({ banners }: { banners: Banner[] }) {
   return (
     <section className="bg-vipNavy-900 pt-6">
       <div className="container mb-3 flex items-center justify-between">
-        <p className="font-poppins text-base font-extrabold text-white">📢 Offers &amp; Updates</p>
+        <p className="font-display text-base font-extrabold text-white">📢 Offers &amp; Updates</p>
         <p className="text-xs font-medium text-white/50">{banners.length} active banners</p>
       </div>
       <div className="overflow-hidden pb-6">
@@ -32,7 +32,7 @@ export function BannerCarousel({ banners }: { banners: Banner[] }) {
                 {(b.title || b.subtitle) && (
                   <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/70 via-black/10 to-transparent p-4">
                     {b.title && (
-                      <p className="font-poppins text-sm font-extrabold text-white">{b.title}</p>
+                      <p className="font-display text-sm font-extrabold text-white">{b.title}</p>
                     )}
                     {b.subtitle && (
                       <p className="mt-0.5 text-xs text-white/80">{b.subtitle}</p>

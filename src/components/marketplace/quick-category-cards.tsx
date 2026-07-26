@@ -7,7 +7,7 @@ const CARDS = [
     subtitle: "Flat 10% OFF on all Premium Numbers",
     cta: "Grab Now",
     href: "/search",
-    bg: "linear-gradient(135deg,#e0432b,#a8271b)",
+    bg: "linear-gradient(135deg,#b8434b,#8c2530)",
   },
   {
     icon: "💎",
@@ -15,7 +15,7 @@ const CARDS = [
     subtitle: "Handpicked & elite VIP numbers",
     cta: "Explore",
     href: "/search?sort=price_desc",
-    bg: "linear-gradient(135deg,#8b5cf6,#5b21b6)",
+    bg: "linear-gradient(135deg,#1e2a3d,#141c2b)",
   },
   {
     icon: "🔥",
@@ -23,7 +23,7 @@ const CARDS = [
     subtitle: "Most popular & in-demand numbers",
     cta: "View Now",
     href: "/search?sort=trending",
-    bg: "linear-gradient(135deg,#f0a83c,#c2531f)",
+    bg: "linear-gradient(135deg,#cb8058,#833d1b)",
   },
   {
     icon: "👑",
@@ -31,7 +31,7 @@ const CARDS = [
     subtitle: "Exclusive & elite VIP numbers",
     cta: "Discover",
     href: "/search?sort=newest",
-    bg: "linear-gradient(135deg,#2563eb,#1d3faa)",
+    bg: "linear-gradient(135deg,#8c6435,#6e4e29)",
   },
 ];
 
@@ -46,7 +46,7 @@ export function QuickCategoryCards() {
             style={{ background: c.bg }}
           >
             <span className="text-2xl">{c.icon}</span>
-            <p className="font-poppins mt-1 text-base font-extrabold">{c.title}</p>
+            <p className="font-display mt-1 text-base font-extrabold">{c.title}</p>
             <p className="mb-2 text-xs text-white/85">{c.subtitle}</p>
             <Link
               href={c.href}

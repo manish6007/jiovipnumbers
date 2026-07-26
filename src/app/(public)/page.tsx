@@ -35,7 +35,7 @@ export default async function HomePage() {
             <span className="inline-flex items-center gap-1.5 rounded-full border border-[#f0a83c]/50 bg-white/10 px-3.5 py-1.5 text-xs font-bold text-[#f0c988]">
               🚀 LIMITED TIME ONLY
             </span>
-            <h1 className="vip-heading-gradient font-poppins mt-5 text-4xl font-black leading-[1.08] sm:text-5xl">
+            <h1 className="vip-heading-gradient font-display mt-5 text-4xl font-black leading-[1.08] sm:text-5xl">
               Apna Number,
               <br />
               Apni Shaan.

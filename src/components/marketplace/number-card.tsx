@@ -73,7 +73,7 @@ export function NumberCard({ number }: { number: VipNumberWithRelations }) {
       </p>
 
       {isAuction && (
-        <p className="mb-1.5 flex items-center justify-center gap-1 text-center text-xs font-bold text-[#7c3aed]">
+        <p className="mb-1.5 flex items-center justify-center gap-1 text-center text-xs font-bold text-blue-600">
           <Gavel className="h-3 w-3" /> {number.bid_count} bids
           {number.auction_ends_at ? ` · ${timeUntil(number.auction_ends_at)}` : ""}
         </p>
@@ -86,8 +86,8 @@ export function NumberCard({ number }: { number: VipNumberWithRelations }) {
           </p>
           <p
             className={cn(
-              "font-poppins text-lg font-extrabold",
-              isAuction ? "text-[#7c3aed]" : "text-[#d1791f]",
+              "font-display text-lg font-extrabold",
+              isAuction ? "text-blue-600" : "text-[#833d1b]",
             )}
           >
             {formatINR(isAuction ? number.current_bid ?? number.starting_bid ?? 0 : number.selling_price)}
